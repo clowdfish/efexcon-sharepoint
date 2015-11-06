@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Solution xmlns="http://schemas.microsoft.com/sharepoint/" SolutionId="f064f124-2a30-4d1c-a635-035c4237cf70" SharePointProductVersion="15.0">
+  <Assemblies>
+    <Assembly Location="ExternalContentTypeCreator.dll" DeploymentTarget="GlobalAssemblyCache" />
+  </Assemblies>
+  <TemplateFiles>
+    <TemplateFile Location="Layouts\DataDefinition\DataSources.aspx" />
+  </TemplateFiles>
+  <FeatureManifests>
+    <FeatureManifest Location="ExternalContentTypeCreator_SiteSettingsCustomAction\Feature.xml" />
+  </FeatureManifests>
+</Solution>
