@@ -1,0 +1,1 @@
+Remove the web.config file from the layouts folder or it will overwrite the web.config files of all SharePoint sites.

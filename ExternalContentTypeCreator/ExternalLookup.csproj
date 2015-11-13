@@ -46,9 +46,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.BusinessData\v4.0_15.0.0.0__71e9bce111e9429c\Microsoft.BusinessData.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SharePoint.BusinessData.Administration.Client">
-      <HintPath>..\..\..\Microsoft.SharePoint.BusinessData.Administration.Client.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -79,6 +76,7 @@
     <None Include="Layouts\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{8480c06f-e6f2-4c7a-8eb4-795631d72653}</SharePointProjectItemId>
     </None>
+    <None Include="Layouts\web.config" />
     <None Include="Package\Package.package">
       <PackageId>{f064f124-2a30-4d1c-a635-035c4237cf70}</PackageId>
     </None>
@@ -103,4 +101,8 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" Condition="'$(VSToolsPath)' != ''" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -1,7 +1,11 @@
-﻿using Microsoft.SharePoint.BusinessData.Administration.Client;
+﻿//using Microsoft.SharePoint.BusinessData.Administration.Client;
+using Microsoft.SharePoint.BusinessData.Administration;
 using Microsoft.BusinessData.MetadataModel;
 using Microsoft.BusinessData.Runtime;
 using System;
+using Microsoft.SharePoint.BusinessData.SharedService;
+using Microsoft.SharePoint.Administration;
+using Microsoft.SharePoint;
 
 namespace EFEXCON.ExternalLookup.Core
 {
@@ -16,10 +20,81 @@ namespace EFEXCON.ExternalLookup.Core
             
         }
 
+        public static string getAllExternalContentTypes()
+        {
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+
+            //SPSite site = new SPSite("http://sharepoint-dev");
+            //SPServiceContext context = SPServiceContext.GetContext(site);
+
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+            AdministrationMetadataCatalog catalog = 
+                service.GetAdministrationMetadataCatalog(context);
+
+            EntityCollection ects = catalog.GetEntities("*", "*", true);
+
+            string result = "";
+
+            foreach (Entity ect in ects)
+            {
+                result += "ECT Name: " + ect.Name + "<br />";
+            }
+
+            if (String.IsNullOrEmpty(result))
+                result = "No external content type available.";
+
+            return result;
+        }
+
+        public static LobSystem createLobSystem(string name, SystemType type)
+        {
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+
+            LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
+
+            foreach (var lobSystem in availableLobSystems)
+            {
+                if(lobSystem.Name == name && lobSystem.SystemType == type)
+                {
+                    return lobSystem;
+                }
+            }
+
+            // if no LobSystem was found, create a new one and return it
+            return availableLobSystems.Create(name, true, type);
+        }
+
+        public static string listAllLobSystems()
+        {
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+
+            LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
+
+            string result = "";
+            foreach (var lobSystem in availableLobSystems)
+            {
+                result += lobSystem.Name + "<br />";
+            }
+
+            if (String.IsNullOrEmpty(result))
+                result = "No LobSystem available.";
+
+            return result;
+        }
 
         public void createNewContentType()
         {
-            AdministrationMetadataCatalog catalog = AdministrationMetadataCatalog.GetCatalog("http://sharepoint-dev/");
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+            AdministrationMetadataCatalog catalog = 
+                service.GetAdministrationMetadataCatalog(context);
 
             // Create a new customer model 
             Model customerModel = Model.Create("CustomerModel", true, catalog);

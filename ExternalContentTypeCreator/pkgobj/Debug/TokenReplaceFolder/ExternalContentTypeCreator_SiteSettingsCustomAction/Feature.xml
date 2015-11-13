@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Id="8def28fe-eee4-46f6-817a-407c948e2b49" Scope="Web" Title="ExternalContentTypeCreator Feature1">
-  <ElementManifests>
-    <ElementManifest Location="SiteSettingsCustomAction\Elements.xml" />
-  </ElementManifests>
-</Feature>

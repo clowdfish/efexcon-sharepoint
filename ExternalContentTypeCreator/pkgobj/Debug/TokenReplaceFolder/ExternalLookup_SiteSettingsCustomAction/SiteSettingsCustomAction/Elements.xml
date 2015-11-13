@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <CustomActionGroup
+     Id="EfexconConfigurationGroup"
+     Location="Microsoft.SharePoint.SiteSettings"
+     Title="EFEXCON Configuration"
+     Description="Configuration section for EFEXCON solution items"
+     ImageUrl="/_layouts/Images/STSICON.GIF" />
+
+  <CustomAction
+    Id="DataSourceConfig"
+    GroupId="EfexconConfigurationGroup"
+    Location="Microsoft.SharePoint.SiteSettings"
+    Description="Configuration of external data sources"
+    Title="External data sources"
+    Rights="ManageWeb"
+    ImageUrl="/_layouts/Images/STSICON.GIF">
+    <UrlAction Url="~site/_layouts/DataDefinition/DataSources.aspx"/>
+  </CustomAction>
+</Elements>

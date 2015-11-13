@@ -4,9 +4,10 @@
     <Assembly Location="ExternalContentTypeCreator.dll" DeploymentTarget="GlobalAssemblyCache" />
   </Assemblies>
   <TemplateFiles>
+    <TemplateFile Location="Layouts\web.config" />
     <TemplateFile Location="Layouts\DataDefinition\DataSources.aspx" />
   </TemplateFiles>
   <FeatureManifests>
-    <FeatureManifest Location="ExternalContentTypeCreator_SiteSettingsCustomAction\Feature.xml" />
+    <FeatureManifest Location="ExternalLookup_SiteSettingsCustomAction\Feature.xml" />
   </FeatureManifests>
 </Solution>
