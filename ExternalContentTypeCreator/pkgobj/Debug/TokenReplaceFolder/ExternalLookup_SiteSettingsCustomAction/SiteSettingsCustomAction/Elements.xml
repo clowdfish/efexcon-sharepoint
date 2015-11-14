@@ -15,6 +15,6 @@
     Title="External data sources"
     Rights="ManageWeb"
     ImageUrl="/_layouts/Images/STSICON.GIF">
-    <UrlAction Url="~site/_layouts/DataDefinition/DataSources.aspx"/>
+    <UrlAction Url="~site/_layouts/EFEXCON/DataDefinition/DataSources.aspx"/>
   </CustomAction>
 </Elements>

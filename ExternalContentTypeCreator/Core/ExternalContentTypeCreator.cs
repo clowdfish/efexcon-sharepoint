@@ -47,6 +47,12 @@ namespace EFEXCON.ExternalLookup.Core
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static LobSystem createLobSystem(string name, SystemType type)
         {
             SPWeb web = SPContext.Current.Web;
@@ -67,6 +73,51 @@ namespace EFEXCON.ExternalLookup.Core
             return availableLobSystems.Create(name, true, type);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Boolean deleteLobSystem(string name, SystemType type)
+        {
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+
+            LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
+
+            foreach (var lobSystem in availableLobSystems)
+            {
+                if (lobSystem.Name == name && lobSystem.SystemType == type)
+                {
+                    lobSystem.Delete();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="lobSystem"></param>
+        /// <returns></returns>
+        public static LobSystemInstance createLobSystemInstance(string name, LobSystem lobSystem)
+        {
+            foreach (var lobSystemInstance in lobSystem.LobSystemInstances)
+            {
+                if (lobSystemInstance.Name == name && lobSystemInstance.LobSystem == lobSystem)
+                {
+                    return lobSystemInstance;
+                }
+            }
+
+            return lobSystem.LobSystemInstances.Create(name, true, lobSystem);
+        }
+
         public static string listAllLobSystems()
         {
             SPWeb web = SPContext.Current.Web;
@@ -82,10 +133,12 @@ namespace EFEXCON.ExternalLookup.Core
             }
 
             if (String.IsNullOrEmpty(result))
-                result = "No LobSystem available.";
+                result = "No data source available.";
 
             return result;
         }
+
+
 
         public void createNewContentType()
         {

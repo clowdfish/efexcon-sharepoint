@@ -4,8 +4,13 @@
     <Assembly Location="ExternalContentTypeCreator.dll" DeploymentTarget="GlobalAssemblyCache" />
   </Assemblies>
   <TemplateFiles>
+    <TemplateFile Location="Layouts\EFEXCON\css\style.scss" />
     <TemplateFile Location="Layouts\web.config" />
-    <TemplateFile Location="Layouts\DataDefinition\DataSources.aspx" />
+    <TemplateFile Location="Layouts\EFEXCON\css\style.css" />
+    <TemplateFile Location="Layouts\EFEXCON\css\style.min.css" />
+    <TemplateFile Location="Layouts\EFEXCON\DataDefinition\DataSources.aspx" />
+    <TemplateFile Location="Layouts\EFEXCON\js\jquery-2.1.4.min.js" />
+    <TemplateFile Location="Layouts\EFEXCON\js\script.js" />
   </TemplateFiles>
   <FeatureManifests>
     <FeatureManifest Location="ExternalLookup_SiteSettingsCustomAction\Feature.xml" />
