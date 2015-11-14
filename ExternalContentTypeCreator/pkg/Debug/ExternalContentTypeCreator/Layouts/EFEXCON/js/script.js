@@ -1,17 +1,25 @@
-﻿function showNewForm(button) {
+﻿function showNewForm() {
     $('.new-form').fadeIn();
-    $(button).hide();
+    $('#ShowNewFormButton').hide();
+}
+
+function hideNewForm() {
+    $('.new-form').hide();
+    $('#ShowNewFormButton').show();
 }
 
 function checkForm() {
     $('#newFormStatus').text("");
 
     var title = $('#title').val();
-    var connectionString = $('#connectionString').val();
+    var url = $('#url').val();
+    var database = $('#database').val();
     var username = $('#username').val();
     var password = $('#password').val();
 
-    if (title && connectionString && username && password)
+    // check url format and return false if invalid
+
+    if (title && url && database && username && password)
         return true;
 
     $('#newFormStatus').text("All fields must be filled.");

@@ -22,6 +22,15 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl DataSources;
         
         /// <summary>
+        /// ShowNewFormButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ShowNewFormButton;
+        
+        /// <summary>
         /// NewForm control.
         /// </summary>
         /// <remarks>
@@ -49,13 +58,22 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
         protected global::System.Web.UI.WebControls.Label DataTypeLabel;
         
         /// <summary>
-        /// ConnectionStringLabel control.
+        /// DatabaseLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ConnectionStringLabel;
+        protected global::System.Web.UI.WebControls.Label DatabaseLabel;
+        
+        /// <summary>
+        /// UrlLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label UrlLabel;
         
         /// <summary>
         /// UsernameLabel control.

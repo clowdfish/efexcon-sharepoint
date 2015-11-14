@@ -22,7 +22,7 @@ Data Sources
 <asp:Content ID="Main" ContentPlaceHolderID="PlaceHolderMain" runat="server">
     <h2>Available data sources</h2>
     <div id="DataSources" class="container" runat="server"></div>
-    <asp:Button OnClientClick="showNewForm(this); return false;" Text="Add data source" runat="server" />
+    <asp:Button OnClientClick="showNewForm(); return false;" Text="Add data source" ClientIDMode="Static" ID="ShowNewFormButton" runat="server" />
 
     <div id="NewForm" class="container new-form" runat="server">
         <h2>New data source</h2>
@@ -43,8 +43,12 @@ Data Sources
                 </span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="ConnectionStringLabel" runat="server" Text="Connection url"></asp:Label></span>
-                <span class="table-cell"><input type="text" id="connectionString" name="connectionString" /></span>
+                <span class="table-cell"><asp:Label ID="DatabaseLabel" runat="server" Text="Database"></asp:Label></span>
+                <span class="table-cell"><input type="text" name="database" id="database" /></span>
+            </span>
+            <span class="table-row">
+                <span class="table-cell"><asp:Label ID="UrlLabel" runat="server" Text="Connection url"></asp:Label></span>
+                <span class="table-cell"><input type="text" id="url" name="url" /></span>
             </span>
             <span class="table-row heading">
                 <span class="table-cell">Authentication parameters</span>
@@ -60,6 +64,7 @@ Data Sources
         </span>
         <div id="newFormStatus" class="status"></div>
         <asp:Button OnClick="saveDataSource" OnClientClick="return checkForm()" Text="Save" runat="server" />
+        <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
     </div>
 
     <div class="container">
