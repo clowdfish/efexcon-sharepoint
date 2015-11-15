@@ -67,13 +67,13 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
         protected global::System.Web.UI.WebControls.Label DatabaseLabel;
         
         /// <summary>
-        /// UrlLabel control.
+        /// ServerNameLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label UrlLabel;
+        protected global::System.Web.UI.WebControls.Label ServerNameLabel;
         
         /// <summary>
         /// UsernameLabel control.

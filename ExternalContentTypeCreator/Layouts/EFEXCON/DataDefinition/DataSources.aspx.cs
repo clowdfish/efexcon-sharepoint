@@ -3,11 +3,15 @@ using System.Data;
 using System.Data.SqlClient;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
+using System.Web.UI.WebControls;
 using Microsoft.BusinessData.MetadataModel;
 
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 {
     using EFEXCON.ExternalLookup.Core;
+    using Microsoft.SharePoint.BusinessData.Administration;
+    using System.Collections.Generic;
+    using System.Web.UI;
 
     public partial class Settings : LayoutsPageBase
     {
@@ -25,7 +29,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             string title = Request.Form["title"];
             string type = Request.Form["dataType"];
-            string url = Request.Form["url"];
+            string server = Request.Form["url"];
             string database = Request.Form["database"];
             string username = Request.Form["username"];
             string password = Request.Form["password"];
@@ -33,18 +37,23 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             // the connection string must be conform to
             // Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
 
-            // TODO Check url format
+            // TODO Check server format
 
             var connectionString = 
-                String.Format("Server={0};Database={1};User Id={2};Password={3}", 
-                    url, database, username, password);
+                String.Format("Server={0};Database={1};User Id={2};Password={3};", 
+                    server, database, username, password);
 
-            Status.InnerHtml = testDataConnection(connectionString);
+            if(connectionStringIsValid(connectionString))
+            {
+                var lobSystem = Creator.createLobSystem(title, SystemType.Database);
+                var lobSystemInstance = Creator.createLobSystemInstance(lobSystem, server, database, username, password);
 
-            // TODO if test was successful add new LobSystem and LobSystemInstance
-            // TODO set status and refresh view
-
-            //Status.InnerHtml = "<span style='color:red;'>Not yet implemented.</span>";
+                if(lobSystem != null && lobSystemInstance != null)
+                {
+                    Status.InnerHtml = "LobSystem and LobSystemInstance created.";
+                    listLobSystems();
+                }
+            }
         }
 
         /// <summary>
@@ -52,23 +61,20 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        protected String testDataConnection(string connectionString)
+        protected Boolean connectionStringIsValid(string connectionString)
         {
             try
             {
-                using (SqlConnection cn = new SqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    SqlCommand cmd = new SqlCommand("SHOW TABLES;", cn);
-                    cn.Open();
-                    SqlDataReader rdr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-                    rdr.Read();
-
-                    return rdr[0].ToString(); //read a value
+                    connection.Open();
+                    return connection.State == ConnectionState.Open;
                 }
             }
             catch(Exception e)
             {
-                return "Could not create a connection to the data source.";
+                Status.InnerHtml = "Could not create a connection to the data source: " + e.ToString();
+                return false; 
             }
         }
 
@@ -77,20 +83,38 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             Status.InnerHtml = Creator.getAllExternalContentTypes();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected void listLobSystems()
         {
-            DataSources.InnerHtml = Creator.listAllLobSystems();
+            DataSources.InnerHtml = "";
+
+            foreach (var lobSystem in Creator.listAllLobSystems())
+            {
+                var separator = new LiteralControl("<div></div>");
+
+                var label = new Label();
+                label.Text = lobSystem.Name + " ";
+                DataSources.Controls.Add(label);
+
+                var link = new LinkButton
+                {
+                    ID = "delete_" + lobSystem.Name,
+                    CommandArgument = lobSystem.Name,
+                    Text = "delete"
+                };
+                link.Command += deleteLobSystem;
+                DataSources.Controls.Add(link);
+
+                DataSources.Controls.Add(separator);
+            }
         }
 
-        protected void createLobSystem(object sender, EventArgs e)
+        protected void deleteLobSystem(object sender, CommandEventArgs e)
         {
-            Creator.createLobSystem("EFEXCON", SystemType.Database);
-            listLobSystems();
-        }
-
-        protected void deleteLobSystem(object sender, EventArgs e)
-        {
-            var deleted = Creator.deleteLobSystem("EFEXCON", SystemType.Database);
+            string lobName = e.CommandArgument.ToString();
+            var deleted = Creator.deleteLobSystem(lobName, SystemType.Database);
 
             if(deleted)
             {

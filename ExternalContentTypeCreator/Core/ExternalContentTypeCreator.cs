@@ -6,6 +6,7 @@ using System;
 using Microsoft.SharePoint.BusinessData.SharedService;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
+using System.Collections.Generic;
 
 namespace EFEXCON.ExternalLookup.Core
 {
@@ -20,6 +21,10 @@ namespace EFEXCON.ExternalLookup.Core
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public static string getAllExternalContentTypes()
         {
             SPWeb web = SPContext.Current.Web;
@@ -102,23 +107,48 @@ namespace EFEXCON.ExternalLookup.Core
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="name"></param>
         /// <param name="lobSystem"></param>
+        /// <param name="server"></param>
+        /// <param name="database"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
         /// <returns></returns>
-        public static LobSystemInstance createLobSystemInstance(string name, LobSystem lobSystem)
+        public static LobSystemInstance createLobSystemInstance(LobSystem lobSystem, string server, string database, string username, string password)
         {
-            foreach (var lobSystemInstance in lobSystem.LobSystemInstances)
+            LobSystemInstance lobSystemInstance = null;
+
+            foreach (var instance in lobSystem.LobSystemInstances)
             {
-                if (lobSystemInstance.Name == name && lobSystemInstance.LobSystem == lobSystem)
+                if (instance.Name == lobSystem.Name && instance.LobSystem == lobSystem)
                 {
-                    return lobSystemInstance;
+                    lobSystemInstance = instance;
                 }
             }
 
-            return lobSystem.LobSystemInstances.Create(name, true, lobSystem);
+            if(lobSystemInstance == null)
+            {
+                lobSystemInstance = lobSystem.LobSystemInstances.Create(lobSystem.Name, true, lobSystem);
+            }
+
+            // Set the connection properties 
+            lobSystemInstance.Properties.Add("AuthenticationMode", "Credentials");
+            lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
+            lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
+            lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
+            lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
+            lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
+            lobSystemInstance.Properties.Add("RdbConnection User ID", username);
+            lobSystemInstance.Properties.Add("RdbConnection Password", password);
+            lobSystemInstance.Properties.Add("RdbConnection Trusted_Connection", "false");
+
+            return lobSystemInstance;
         }
 
-        public static string listAllLobSystems()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static List<LobSystem> listAllLobSystems()
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -126,19 +156,15 @@ namespace EFEXCON.ExternalLookup.Core
 
             LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
 
-            string result = "";
+            List<LobSystem> result = new List<LobSystem>();
+
             foreach (var lobSystem in availableLobSystems)
             {
-                result += lobSystem.Name + "<br />";
+                result.Add(lobSystem);
             }
-
-            if (String.IsNullOrEmpty(result))
-                result = "No data source available.";
 
             return result;
         }
-
-
 
         public void createNewContentType()
         {

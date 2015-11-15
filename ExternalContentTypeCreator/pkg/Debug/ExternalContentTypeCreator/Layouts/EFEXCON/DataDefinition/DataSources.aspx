@@ -32,7 +32,7 @@ Data Sources
             </span>
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="TitleLabel" runat="server" Text="Name"></asp:Label></span>
-                <span class="table-cell"><input type="text" name="title" id="title" /></span>
+                <span class="table-cell"><input type="text" name="title" id="title" placeholder="Choose a name for the new data source"/></span>
             </span>
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="DataTypeLabel" runat="server" Text="Type"></asp:Label></span>
@@ -44,11 +44,11 @@ Data Sources
             </span>
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="DatabaseLabel" runat="server" Text="Database"></asp:Label></span>
-                <span class="table-cell"><input type="text" name="database" id="database" /></span>
+                <span class="table-cell"><input type="text" name="database" id="database" placeholder="The database name" /></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="UrlLabel" runat="server" Text="Connection url"></asp:Label></span>
-                <span class="table-cell"><input type="text" id="url" name="url" /></span>
+                <span class="table-cell"><asp:Label ID="ServerNameLabel" runat="server" Text="Server name"></asp:Label></span>
+                <span class="table-cell"><input type="text" id="url" name="url" placeholder="YOUR_SERVER\INSTANCE" /></span>
             </span>
             <span class="table-row heading">
                 <span class="table-cell">Authentication parameters</span>
@@ -71,8 +71,6 @@ Data Sources
         <div id="Status" class="status" runat="server"></div>
 
         <asp:Button OnClick="showAvailableECT" Text="List ECTs" runat="server" />
-        <asp:Button OnClick="createLobSystem" Text="Create Lob System" runat="server" />
-        <asp:Button OnClick="deleteLobSystem" Text="Delete Lob System" runat="server" />
     </div>
 
     <script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script>
