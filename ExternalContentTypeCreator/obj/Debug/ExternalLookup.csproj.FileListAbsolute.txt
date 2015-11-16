@@ -78,3 +78,4 @@ C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalC
 C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.dll
 C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.pdb
 C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\Microsoft.SharePoint.Client.Search.dll
+C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalLookup.csprojResolveAssemblyReference.cache

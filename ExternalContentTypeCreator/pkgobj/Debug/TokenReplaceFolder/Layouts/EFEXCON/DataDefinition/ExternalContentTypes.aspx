@@ -53,14 +53,23 @@ External Content Types
                     <span class="table-row">
                         <span class="table-cell">Column name</span>
                         <span class="table-cell">Include in ECT</span>
+                        <span class="table-cell">Is key?</span>
                         <span class="table-cell">Field name in ECT</span>
                     </span>
                 </HeaderTemplate>
                 <ItemTemplate>
                     <span class="table-row">
                         <span class="table-cell"><%# Eval("Name") %></span>
-                        <span class="table-cell"><input type="checkbox" name="struct_<%# Eval("Name") %>_check" value="Test"/></span>
-                        <span class="table-cell"><input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" /></span>
+                        <span class="table-cell">
+                            <input type="checkbox" name="struct_<%# Eval("Name") %>_check" value="Test"/>
+                        </span>
+                        <span class="table-cell">
+                            <input type="checkbox" name="struct_<%# Eval("Name") %>_key" value="Test"/>
+                        </span>
+                        <span class="table-cell">
+                            <input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" />
+                            <input type="hidden" name="struct_<%# Eval("Name") %>_type" value="<%# Eval("Type") %>" />
+                        </span>
                     </span>
                 </ItemTemplate>
             </asp:Repeater>

@@ -1,11 +1,5 @@
-﻿//using Microsoft.SharePoint.BusinessData.Administration.Client;
-using Microsoft.SharePoint.BusinessData.Administration;
-using Microsoft.BusinessData.MetadataModel;
-using Microsoft.BusinessData.Runtime;
+﻿using Microsoft.SharePoint.BusinessData.Administration;
 using System;
-using Microsoft.SharePoint.BusinessData.SharedService;
-using Microsoft.SharePoint.Administration;
-using Microsoft.SharePoint;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFEXCON.ExternalLookup.Helpers
+namespace EFEXCON.ExternalLookup.Helper
 {
     class Constants
     {

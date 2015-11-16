@@ -76,25 +76,41 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     {
                         checkList.Add(name.Substring(7));
                     }
-                    else
+                    else if(!name.EndsWith("_key") && !name.EndsWith("_type"))
                     {
                         list.Add(name.Substring(7));
                     }
                 }
             }
             
-            List<string[]> resultList = new List<string[]>();
+            List<ExternalColumnReference> resultList = new List<ExternalColumnReference>();
             foreach (string item in list)
             {
                 if (checkList.Contains(item + "_check"))
                 {
-                    resultList.Add(new string[2] {
-                        item, Request.Form[item]
-                    });
+                    resultList.Add(new ExternalColumnReference()
+                    {
+                        SourceName = item,
+                        DestinationName = Request.Form["struct_" + item],
+                        Type = Request.Form["struct_" + item + "_type"],
+                        IsKey = String.IsNullOrEmpty(Request.Form["struct_" + item + "_key"]) ? false : true
+                    });                  
                 }
             }
         
             // TODO now start creation of new external content type
+
+            /*
+            foreach(ExternalColumnReference reference in resultList)
+            {
+                Status.InnerHtml += reference.SourceName + " (" + reference.Type + ")";
+
+                if (reference.IsKey)
+                    Status.InnerHtml += " KEY!; ";
+                else
+                    Status.InnerHtml += "; ";
+            }
+            */
 
             Status.InnerHtml = "Not yet implemented.";           
         }
