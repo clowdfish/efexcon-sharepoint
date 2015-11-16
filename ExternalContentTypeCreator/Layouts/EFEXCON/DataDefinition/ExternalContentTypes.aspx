@@ -42,15 +42,32 @@ External Content Types
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="Entity"></asp:Label></span>
                 <span class="table-cell">
-                    <asp:DropDownList ID="DataSourceTables" AutoPostBack="true" runat="server" AppendDataBoundItems="true" Width="100%">
-                        <asp:ListItem></asp:ListItem>
-                    </asp:DropDownList>  
+                    <asp:DropDownList ID="DataSourceTables" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
                 </span>
             </span>
         </span>
       
+        <span class="table data-source-structure-table" id="DataSourceStructureTable" runat="server">
+            <asp:Repeater ID="DataSourceStructure" runat="server">
+                <HeaderTemplate>
+                    <span class="table-row">
+                        <span class="table-cell">Column name</span>
+                        <span class="table-cell">Include in ECT</span>
+                        <span class="table-cell">Field name in ECT</span>
+                    </span>
+                </HeaderTemplate>
+                <ItemTemplate>
+                    <span class="table-row">
+                        <span class="table-cell"><%# Eval("Name") %></span>
+                        <span class="table-cell"><input type="checkbox" name="struct_<%# Eval("Name") %>_check" value="Test"/></span>
+                        <span class="table-cell"><input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" /></span>
+                    </span>
+                </ItemTemplate>
+            </asp:Repeater>
+        </span>
+
         <div id="newFormStatus" class="status"></div>
-        <asp:Button OnClick="saveExternalContentType" OnClientClick="return checkForm()" Text="Save" runat="server" />
+        <asp:Button OnClick="saveExternalContentType" OnClientClick="return checkForm() && validStructure()" Text="Save" runat="server" />
         <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
     </div>
     <div id="Status" class="status" runat="server"></div>

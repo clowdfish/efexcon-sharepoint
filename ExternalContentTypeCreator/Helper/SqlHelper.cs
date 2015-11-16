@@ -22,10 +22,10 @@ namespace EFEXCON.ExternalLookup.Helper
 
         public void Initialize()
         {
-            
+
         }
 
-        public static List<String> getTablesForLobSystem(LobSystem lobSystem)
+        private static string getDatabaseConnectionString(LobSystem lobSystem)
         {
             List<LobSystemInstance> list = lobSystem.LobSystemInstances.ToList<LobSystemInstance>();
 
@@ -67,9 +67,18 @@ namespace EFEXCON.ExternalLookup.Helper
                 throw new ArgumentNullException("Password string is not defined.");
 
 
-            var connectionString =
-                String.Format("Server={0};Database={1};User Id={2};Password={3};",
+            return String.Format("Server={0};Database={1};User Id={2};Password={3};",
                     server, database, username, password);
+        }
+
+        public static List<String> getTablesForLobSystem(LobSystem lobSystem)
+        {
+            var connectionString = SqlHelper.getDatabaseConnectionString(lobSystem);
+
+            string database = connectionString.Split(';').Where(x => x.StartsWith("Database")).Select(x => x.Split('=')[1]).ToArray()[0];
+      
+            if (String.IsNullOrEmpty(database))
+                throw new ArgumentNullException("Database string is not defined.");
 
             try
             {
@@ -95,6 +104,46 @@ namespace EFEXCON.ExternalLookup.Helper
                 return null;
             }
         }
+
+        public static List<TableColumn> getTableStructure(LobSystem lobSystem, string tableName)
+        {
+            var connectionString = SqlHelper.getDatabaseConnectionString(lobSystem);
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    var commandString = String.Format("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{0}'", tableName);
+
+                    SqlCommand cmd = new SqlCommand(commandString, connection);
+                    connection.Open();
+
+                    SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+                    var result = new List<TableColumn>();
+                    while (reader.Read())
+                    {
+                        result.Add(new TableColumn()
+                        {
+                            Name = reader.GetString(0),
+                            Type = reader.GetString(1)
+                        });
+                    }
+
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+    }
+
+    public class TableColumn
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
     }
  }
   

@@ -7,6 +7,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
     using Core;
     using Helper;
     using Microsoft.SharePoint.BusinessData.Administration;
+    using System.Collections.Generic;
     using System.Linq;
 
     public partial class ExternalContentTypes : LayoutsPageBase
@@ -15,10 +16,12 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             listExternalContentTypes();
 
-            if(!Page.IsPostBack) {
+            if (!Page.IsPostBack)
+            {
                 ShowNewFormButton.Style.Add("display", "block");
                 NewForm.Style.Add("display", "none");
-              
+                DataSourceStructureTable.Style.Add("display", "none");
+
                 LobSystems.DataSource = Creator.listAllLobSystems().Select(x => x.Name);
                 LobSystems.DataBind();
             }
@@ -27,14 +30,29 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 ShowNewFormButton.Style.Add("display", "none");
                 NewForm.Style.Add("display", "block");
 
-                if (!String.IsNullOrEmpty(LobSystems.SelectedItem.Text)) {
-                    LobSystem lobSystem = Creator.getLobSystem(LobSystems.SelectedItem.Text);   
+                if (!String.IsNullOrEmpty(LobSystems.SelectedItem.Text))
+                {
+                    LobSystem lobSystem = Creator.getLobSystem(LobSystems.SelectedItem.Text);
 
                     if (lobSystem == null)
                         throw new NullReferenceException("LobSystem can not be found.");
 
-                    DataSourceTables.DataSource = SqlHelper.getTablesForLobSystem(lobSystem);
-                    DataSourceTables.DataBind();
+                    if (DataSourceTables.DataSource == null)
+                    {
+                        DataSourceTables.DataSource = SqlHelper.getTablesForLobSystem(lobSystem);
+                        DataSourceTables.DataBind();
+                    }                         
+       
+                    if (!String.IsNullOrEmpty(DataSourceTables.SelectedItem.Text))
+                    {
+                        DataSourceStructureTable.Style.Add("display", "block");
+
+                        if (DataSourceStructure.DataSource == null)
+                        {
+                            DataSourceStructure.DataSource = SqlHelper.getTableStructure(lobSystem, DataSourceTables.SelectedItem.Text);
+                            DataSourceStructure.DataBind();
+                        }
+                    }
                 }
             }
         }
@@ -45,8 +63,40 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         }
 
         protected void saveExternalContentType(object sender, EventArgs e)
-        {
-            Status.InnerHtml = "Not yet implemented.";
+        {    
+            List<string> list = new List<string>();
+            List<string> checkList = new List<string>();
+
+            // process posted inputs
+            foreach (string name in Request.Form.AllKeys)
+            {               
+                if (name.StartsWith("struct_"))
+                {    
+                    if(name.EndsWith("_check"))
+                    {
+                        checkList.Add(name.Substring(7));
+                    }
+                    else
+                    {
+                        list.Add(name.Substring(7));
+                    }
+                }
+            }
+            
+            List<string[]> resultList = new List<string[]>();
+            foreach (string item in list)
+            {
+                if (checkList.Contains(item + "_check"))
+                {
+                    resultList.Add(new string[2] {
+                        item, Request.Form[item]
+                    });
+                }
+            }
+        
+            // TODO now start creation of new external content type
+
+            Status.InnerHtml = "Not yet implemented.";           
         }
     }
 }

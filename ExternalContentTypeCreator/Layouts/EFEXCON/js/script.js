@@ -26,3 +26,18 @@ function checkForm() {
 
     return true;
 }
+
+function validStructure() {
+    $(".data-source-structure-table input[type=checkbox]").each(function () {
+        var name = $(this).attr("name");
+        name = name.substr(0, name.length - 6);
+        var checked = $(this).is(':checked');
+    });
+
+    $(".data-source-structure-table input[type=text]").each(function () {
+        var name = $(this).attr("name");
+        var value = $(this).val();
+    });
+
+    return true;
+}
