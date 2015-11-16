@@ -17,4 +17,15 @@
     ImageUrl="/_layouts/Images/STSICON.GIF">
     <UrlAction Url="~site/_layouts/EFEXCON/DataDefinition/DataSources.aspx"/>
   </CustomAction>
+
+  <CustomAction
+    Id="ExternalContentTypeConfig"
+    GroupId="EfexconConfigurationGroup"
+    Location="Microsoft.SharePoint.SiteSettings"
+    Description="Configuration of external content types"
+    Title="External content types"
+    Rights="ManageWeb"
+    ImageUrl="/_layouts/Images/STSICON.GIF">
+    <UrlAction Url="~site/_layouts/EFEXCON/DataDefinition/ExternalContentTypes.aspx"/>
+  </CustomAction>
 </Elements>

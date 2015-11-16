@@ -57,6 +57,7 @@
     <Reference Include="Microsoft.SharePoint.Client.ServerRuntime" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\SqlHelper.cs" />
     <Compile Include="Core\ExternalContentTypeCreator.cs" />
     <Compile Include="Helper\Constants.cs" />
     <Compile Include="Layouts\EFEXCON\DataDefinition\DataSources.aspx.cs">
@@ -65,6 +66,13 @@
     </Compile>
     <Compile Include="Layouts\EFEXCON\DataDefinition\DataSources.aspx.designer.cs">
       <DependentUpon>DataSources.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Layouts\EFEXCON\DataDefinition\ExternalContentTypes.aspx.cs">
+      <DependentUpon>ExternalContentTypes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\EFEXCON\DataDefinition\ExternalContentTypes.aspx.designer.cs">
+      <DependentUpon>ExternalContentTypes.aspx.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -104,6 +112,7 @@
       <DependentUpon>style.css</DependentUpon>
     </Content>
     <Content Include="Layouts\EFEXCON\DataDefinition\DataSources.aspx" />
+    <Content Include="Layouts\EFEXCON\DataDefinition\ExternalContentTypes.aspx" />
     <Content Include="Layouts\EFEXCON\js\jquery-2.1.4.min.js" />
     <Content Include="Layouts\EFEXCON\js\script.js" />
     <Content Include="SiteSettingsCustomAction\Elements.xml" />

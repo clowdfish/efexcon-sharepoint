@@ -82,6 +82,30 @@ namespace EFEXCON.ExternalLookup.Core
         /// 
         /// </summary>
         /// <param name="name"></param>
+        /// <returns></returns>
+        public static LobSystem getLobSystem(string name)
+        {
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+
+            LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
+
+            foreach (var lobSystem in availableLobSystems)
+            {
+                if (lobSystem.Name == name)
+                {
+                    return lobSystem;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
         /// <param name="type"></param>
         /// <returns></returns>
         public static Boolean deleteLobSystem(string name, SystemType type)
@@ -166,7 +190,7 @@ namespace EFEXCON.ExternalLookup.Core
             return result;
         }
 
-        public void createNewContentType()
+        public void createNewContentType(string name, LobSystem lobSystem)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -176,35 +200,34 @@ namespace EFEXCON.ExternalLookup.Core
                 service.GetAdministrationMetadataCatalog(context);
 
             // Create a new customer model 
-            Model customerModel = Model.Create("CustomerModel", true, catalog);
+            Model model = Model.Create(name + "Model", true, catalog);
 
-            // Make a new Customer LobSystem
-            LobSystem awLobSystem = customerModel.OwnedReferencedLobSystems.Create("Customer", true, SystemType.Database);
+            string lobSystemInstanceName;
 
-            // Make a new AdventureWorks LobSystemInstance 
-            LobSystemInstance awLobSystemInstance = awLobSystem.LobSystemInstances.Create("AdventureWorks", true);
+            LobSystemInstanceCollection collection = lobSystem.LobSystemInstances;
+            if(collection.GetEnumerator().Current != null)
+            {
+                lobSystemInstanceName = collection.GetEnumerator().Current.Name;
+            }
+            else
+            {
+                throw new LobGenericException("No LobSystemInstance available in LobSystem.");
+            }
+                        
+            // Create a new Entity 
+            Entity entity = Entity.Create(name, lobSystemInstanceName, true, new Version("1.0.0.0"), 10000, CacheUsage.Default, lobSystem, model, catalog);
 
-            // Set the connection properties 
-            awLobSystemInstance.Properties.Add("AuthenticationMode", "PassThrough");
-            awLobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
-            awLobSystemInstance.Properties.Add("RdbConnection Data Source", "DEV1");
-            awLobSystemInstance.Properties.Add("RdbConnection Initial Catalog", "Customers");
-            awLobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
-            awLobSystemInstance.Properties.Add("RdbConnection Pooling", "true");
+            // TODO go on here
 
-            /* Create the Entity Next, create the Entityto represent the Customers table and define which column(s) make up the identifier for the Entity. */
-
-            // Create a new Customer Entity 
-            Entity customerEntity = Entity.Create("Customer", "AdventureWorks", true, new Version("1.0.0.0"), 10000, CacheUsage.Default, awLobSystem, customerModel, catalog);
             // Set the identifier - CustomerID column 
-            customerEntity.Identifiers.Create("CustomerId", true, "System.Int32");
+            entity.Identifiers.Create("CustomerId", true, "System.Int32");
 
             /* Define the Specific Finder Method, Parameters and Type Descriptors
             Next, create the specific finder Method, specify the query it will use, and define the input and output parameters associated with it. 
             The specific finder Method returns exactly one row of data from the data source, given an identifier. */
 
             // Create the specific finder method 
-            Method getCustomerMethod = customerEntity.Methods.Create("GetCustomer", true, false, "GetCustomer");
+            Method getCustomerMethod = entity.Methods.Create("GetCustomer", true, false, "GetCustomer");
 
             // Specify the query 
             getCustomerMethod.Properties.Add("RdbCommandText", "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer] WHERE [CustomerId] = @CustomerId");
@@ -242,7 +265,7 @@ namespace EFEXCON.ExternalLookup.Core
             The finder Method returns all of the rows of data from the data source which its query defines. */
 
             // Create the Finder method 
-            Method getCustomersMethod = customerEntity.Methods.Create("GetCustomers", true, false, "GetCustomers");
+            Method getCustomersMethod = entity.Methods.Create("GetCustomers", true, false, "GetCustomers");
 
             // Specify the query 
             getCustomersMethod.Properties.Add("RdbCommandText", "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer]");
@@ -266,10 +289,8 @@ namespace EFEXCON.ExternalLookup.Core
 
             getCustomersMethod.MethodInstances.Create("GetCustomers", true, returnRootCollectionTypeDescriptor2, MethodInstanceType.Finder, true);
 
-            /* Finally, commit the changes to the BCS Metadata Store. */
-
-            // Publish the Customer Entity 
-            customerEntity.Activate();
+            // Publish the newly created Entity to the BCS Metadata Store.
+            entity.Activate();
         }
     }
  }

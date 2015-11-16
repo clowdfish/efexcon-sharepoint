@@ -10,16 +10,16 @@
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
     
     
-    public partial class DataSources {
+    public partial class ExternalContentTypes {
         
         /// <summary>
-        /// DataSourceContainer control.
+        /// ExternalContentTypesContainer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl DataSourceContainer;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl ExternalContentTypesContainer;
         
         /// <summary>
         /// ShowNewFormButton control.
@@ -40,58 +40,40 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl NewForm;
         
         /// <summary>
-        /// TitleLabel control.
+        /// DataSourceLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label TitleLabel;
+        protected global::System.Web.UI.WebControls.Label DataSourceLabel;
         
         /// <summary>
-        /// DataTypeLabel control.
+        /// LobSystems control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DataTypeLabel;
+        protected global::System.Web.UI.WebControls.DropDownList LobSystems;
         
         /// <summary>
-        /// DatabaseLabel control.
+        /// DataSourceEntityLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label DatabaseLabel;
+        protected global::System.Web.UI.WebControls.Label DataSourceEntityLabel;
         
         /// <summary>
-        /// ServerNameLabel control.
+        /// DataSourceTables control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label ServerNameLabel;
-        
-        /// <summary>
-        /// UsernameLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label UsernameLabel;
-        
-        /// <summary>
-        /// PasswordLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label PasswordLabel;
+        protected global::System.Web.UI.WebControls.DropDownList DataSourceTables;
         
         /// <summary>
         /// Status control.

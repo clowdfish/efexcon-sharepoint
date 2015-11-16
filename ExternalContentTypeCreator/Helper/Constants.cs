@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace EFEXCON.ExternalLookup.Helpers
 {
-
-    using EFEXCON.ExternalLookup.Core;
-
     class Constants
     {
 

@@ -11,18 +11,18 @@ function hideNewForm() {
 function checkForm() {
     $('#newFormStatus').text("");
 
-    var title = $('#title').val();
-    var url = $('#url').val();
-    var database = $('#database').val();
-    var username = $('#username').val();
-    var password = $('#password').val();
+    var inputIsMissing = false;
+    $(".new-form :input").each(function () {
+        if (!$(this).val()) {
+            inputIsMissing = true;
+        }
+    });
 
-    // check url format and return false if invalid
+    if (inputIsMissing) {
+        $('#newFormStatus').text("All fields must be filled.");
+        $('#newFormStatus').css('color', 'red');
+        return false;
+    }
 
-    if (title && url && database && username && password)
-        return true;
-
-    $('#newFormStatus').text("All fields must be filled.");
-    $('#newFormStatus').css('color', 'red');
-    return false;
+    return true;
 }
