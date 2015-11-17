@@ -14,6 +14,9 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            ShowNewFormButton.Style.Add("display", "block");
+            NewForm.Style.Add("display", "none");
+
             listLobSystems();
         }
 
@@ -86,6 +89,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             DataSourceContainer.InnerHtml = "";
 
+            int counter = 0;
             foreach (var lobSystem in Creator.listAllLobSystems())
             {
                 var separator = new LiteralControl("<div></div>");
@@ -104,6 +108,12 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 DataSourceContainer.Controls.Add(link);
 
                 DataSourceContainer.Controls.Add(separator);
+                counter++;
+            }
+
+            if (counter == 0)
+            {
+                DataSourceContainer.InnerHtml = "No LobSystem available.";
             }
         }
 

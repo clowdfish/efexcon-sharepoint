@@ -8,6 +8,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
     using Microsoft.SharePoint.BusinessData.Administration;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Web.UI;
+    using System.Web.UI.WebControls;
 
     public partial class ExternalContentTypes : LayoutsPageBase
     {
@@ -56,9 +58,39 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected void listExternalContentTypes()
         {
-            ExternalContentTypesContainer.InnerHtml = Creator.getAllExternalContentTypes();
+            ExternalContentTypesContainer.InnerHtml = "";
+
+            int counter = 0;
+            foreach (Entity contentType in Creator.listAllExternalContentTypes())
+            {
+                var separator = new LiteralControl("<div></div>");
+
+                var label = new Label();
+                label.Text = contentType.Name + " ";
+                ExternalContentTypesContainer.Controls.Add(label);
+
+                var link = new LinkButton
+                {
+                    ID = "delete_" + contentType.Name,
+                    CommandArgument = contentType.Name,
+                    Text = "delete"
+                };
+                link.Command += deleteContentType;
+                ExternalContentTypesContainer.Controls.Add(link);
+
+                ExternalContentTypesContainer.Controls.Add(separator);
+                counter++;
+            }
+
+            if(counter == 0)
+            {
+                ExternalContentTypesContainer.InnerHtml = "No external content type available.";
+            }
         }
 
         /// <summary>
@@ -67,7 +99,11 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// <param name="sender"></param>
         /// <param name="e"></param>
         protected void saveExternalContentType(object sender, EventArgs e)
-        {    
+        {
+            // hide form
+            ShowNewFormButton.Style.Add("display", "block");
+            NewForm.Style.Add("display", "none");
+
             List<string> list = new List<string>();
             List<string> checkList = new List<string>();
 
@@ -86,7 +122,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     }
                 }
             }
-            
+
             List<ExternalColumnReference> resultList = new List<ExternalColumnReference>();
             foreach (string item in list)
             {
@@ -119,6 +155,31 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
             // start creation of new external content type
             Creator.createNewContentType(newContentTypeName, resultList, lobSystem);
+
+            listExternalContentTypes();
         }
-    }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void deleteContentType(object sender, CommandEventArgs e)
+        {
+            string ectName = e.CommandArgument.ToString();
+            var deleted = Creator.deleteContentType(ectName);
+
+            ShowNewFormButton.Style.Add("display", "block");
+            NewForm.Style.Add("display", "none");
+
+            if (deleted)
+            {
+                listExternalContentTypes();
+            }
+            else
+            {
+                Status.InnerHtml = "External Content type could not be deleted.";
+            }
+        }
+    } // end of class
 }

@@ -7,7 +7,6 @@ using Microsoft.SharePoint;
 using System;
 using System.Collections.Generic;
 using EFEXCON.ExternalLookup.Helper;
-using System.Collections;
 using System.Linq;
 
 namespace EFEXCON.ExternalLookup.Core
@@ -27,31 +26,17 @@ namespace EFEXCON.ExternalLookup.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public static string getAllExternalContentTypes()
+        public static List<Entity> listAllExternalContentTypes()
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
-
-            //SPSite site = new SPSite("http://sharepoint-dev");
-            //SPServiceContext context = SPServiceContext.GetContext(site);
 
             SPServiceContext context = SPServiceContext.GetContext(web.Site);
             AdministrationMetadataCatalog catalog = 
                 service.GetAdministrationMetadataCatalog(context);
 
             EntityCollection ects = catalog.GetEntities("*", "*", true);
-
-            string result = "";
-
-            foreach (Entity ect in ects)
-            {
-                result += "ECT Name: " + ect.Name + "<br />";
-            }
-
-            if (String.IsNullOrEmpty(result))
-                result = "No external content type available.";
-
-            return result;
+            return ects.ToList<Entity>();
         }
 
         /// <summary>
@@ -324,7 +309,7 @@ namespace EFEXCON.ExternalLookup.Core
                 returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
                     reference.SourceName, 
                     true, 
-                    "System.Int32",
+                    reference.Type,
                     reference.SourceName, 
                     identityReference, 
                     null, 
@@ -388,8 +373,8 @@ namespace EFEXCON.ExternalLookup.Core
             // Create the TypeDescriptor for the EntityID parameter 
             entityIDParameter.CreateRootTypeDescriptor(
                 keyColumn.SourceName, 
-                true, 
-                "System.Int32",
+                true,
+                keyColumn.Type,
                 keyColumn.SourceName, 
                 new IdentifierReference(keyColumn.SourceName, new EntityReference(lobSystemName, itemMethodEntity, catalog), catalog), // "AdventureWorks" // "Customer"
                 null, 
@@ -437,7 +422,7 @@ namespace EFEXCON.ExternalLookup.Core
                 returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
                     reference.SourceName,
                     true,
-                    "System.Int32",
+                    reference.Type,
                     reference.SourceName,
                     identityReference,
                     null,
@@ -448,6 +433,34 @@ namespace EFEXCON.ExternalLookup.Core
 
             // Create the specific finder method instance 
             getItemMethod.MethodInstances.Create(itemMethodName, true, returnRootElementTypeDescriptor, MethodInstanceType.SpecificFinder, true); // getCustomer
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Boolean deleteContentType(string name)
+        {
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+            AdministrationMetadataCatalog catalog =
+                service.GetAdministrationMetadataCatalog(context);
+
+            EntityCollection availableEcts = catalog.GetEntities("*", "*", true);
+
+            foreach (var entity in availableEcts)
+            {
+                if (entity.Name == name)
+                {
+                    entity.Delete();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
  }
