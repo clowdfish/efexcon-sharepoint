@@ -198,7 +198,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="name"></param>
         /// <param name="referenceList"></param>
         /// <param name="lobSystem"></param>
-        public void createNewContentType(string name, List<ExternalColumnReference> referenceList, LobSystem lobSystem)
+        public static void createNewContentType(string name, List<ExternalColumnReference> referenceList, LobSystem lobSystem)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);

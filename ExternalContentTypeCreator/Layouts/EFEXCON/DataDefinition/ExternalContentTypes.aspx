@@ -29,6 +29,15 @@ External Content Types
         <h2>New external content type</h2>
         <span class="table">
             <span class="table-row heading">
+                <span class="table-cell">Name</span>
+            </span>
+            <span class="table-row">
+                <span class="table-cell"><asp:Label ID="NameLabel" runat="server" Text="Name"></asp:Label></span>
+                <span class="table-cell">
+                    <input type="text" id="NewContentTypeName" name="name" placeholder="Name for new ECT" runat="server" />
+                </span>
+            </span>
+            <span class="table-row heading">
                 <span class="table-cell">Data source selection</span>
             </span>
             <span class="table-row">

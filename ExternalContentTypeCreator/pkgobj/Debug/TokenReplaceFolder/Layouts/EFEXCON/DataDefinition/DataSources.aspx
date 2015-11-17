@@ -24,7 +24,7 @@ Data Sources
     <div id="DataSourceContainer" class="container" runat="server"></div>
     <asp:Button OnClientClick="showNewForm(); return false;" Text="Add data source" ClientIDMode="Static" ID="ShowNewFormButton" runat="server" />
 
-    <div id="NewForm" class="container new-form" runat="server">
+    <div id="NewForm" class="container new-form data-source-form" runat="server">
         <h2>New data source</h2>
         <span class="table">
             <span class="table-row heading">

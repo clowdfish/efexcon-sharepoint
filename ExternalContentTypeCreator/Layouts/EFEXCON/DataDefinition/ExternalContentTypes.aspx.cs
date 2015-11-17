@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.SharePoint;
 using Microsoft.SharePoint.WebControls;
 
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
@@ -62,6 +61,11 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             ExternalContentTypesContainer.InnerHtml = Creator.getAllExternalContentTypes();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void saveExternalContentType(object sender, EventArgs e)
         {    
             List<string> list = new List<string>();
@@ -97,8 +101,6 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     });                  
                 }
             }
-        
-            // TODO now start creation of new external content type
 
             /*
             foreach(ExternalColumnReference reference in resultList)
@@ -112,7 +114,11 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             */
 
-            Status.InnerHtml = "Not yet implemented.";           
+            string newContentTypeName = NewContentTypeName.Value;
+            LobSystem lobSystem = Creator.getLobSystem(LobSystems.SelectedItem.Text);
+
+            // start creation of new external content type
+            Creator.createNewContentType(newContentTypeName, resultList, lobSystem);
         }
     }
 }
