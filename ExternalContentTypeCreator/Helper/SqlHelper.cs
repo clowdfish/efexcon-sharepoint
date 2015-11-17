@@ -21,19 +21,12 @@ namespace EFEXCON.ExternalLookup.Helper
 
         private static string getDatabaseConnectionString(LobSystem lobSystem)
         {
-            List<LobSystemInstance> list = lobSystem.LobSystemInstances.ToList<LobSystemInstance>();
-
-            if (list.Count() == 0)
-                throw new Exception("No LobSystemInstance available for LobSystem.");
-
-            LobSystemInstance instance = list[0];
-
             string server = "";
             string database = "";
             string username = "";
             string password = "";
 
-            foreach (Property prop in instance.Properties)
+            foreach (Property prop in SqlHelper.getLobSystemInstanceProperties(lobSystem))
             {
                 if (prop.Name == "RdbConnection Data Source")
                     server = prop.Value.ToString();
@@ -63,6 +56,18 @@ namespace EFEXCON.ExternalLookup.Helper
 
             return String.Format("Server={0};Database={1};User Id={2};Password={3};",
                     server, database, username, password);
+        }
+
+        public static Microsoft.SharePoint.BusinessData.Administration.PropertyCollection getLobSystemInstanceProperties(LobSystem lobSystem)
+        {
+            List<LobSystemInstance> list = lobSystem.LobSystemInstances.ToList<LobSystemInstance>();
+
+            if (list.Count() == 0)
+                throw new Exception("No LobSystemInstance available for LobSystem.");
+
+            LobSystemInstance instance = list[0];
+
+            return instance.Properties;
         }
 
         public static List<String> getTablesForLobSystem(LobSystem lobSystem)

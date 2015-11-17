@@ -229,13 +229,23 @@ namespace EFEXCON.ExternalLookup.Core
 
             // Set the identifier
             ExternalColumnReference keyReference = referenceList.Where(x => x.IsKey == true).First();
-            entity.Identifiers.Create(keyReference.DestinationName, true, keyReference.Type); // e.g. CustomerId //  "System.Int32"
+            entity.Identifiers.Create(keyReference.DestinationName, true, keyReference.Type); // e.g. CustomerId // "System.Int32"
+
+            string database = "";
+            foreach (Property prop in SqlHelper.getLobSystemInstanceProperties(lobSystem))
+            {
+                if (prop.Name == "RdbConnection Initial Catalog")
+                    database = prop.Value.ToString();
+            }
+
+            if (String.IsNullOrEmpty(database))
+                throw new Exception("Database name can not be set.");
 
             // Create the specific finder method to return one specific element
-            Creator.CreateReadItemMethod(name, catalog, entity);
+            Creator.CreateReadItemMethod(name, database, lobSystem.Name, referenceList, catalog, entity);
 
             // Create the finder method to return all rows
-            Creator.CreateReadListMethod(name, catalog, entity);
+            Creator.CreateReadListMethod(name, database, lobSystem.Name,referenceList, catalog, entity);
 
             // Publish the newly created Entity to the BCS Metadata Store.
             entity.Activate();
@@ -247,9 +257,10 @@ namespace EFEXCON.ExternalLookup.Core
         /// </summary>
         /// <param name="name"></param>
         /// <param name="database"></param>
+        /// /// <param name="lobSystem"></param>
         /// <param name="catalog"></param>
         /// <param name="entity"></param>
-        private static void CreateReadListMethod(string name, string database, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
+        private static void CreateReadListMethod(string name, string database, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
             string listMethodName = String.Format("Get{0}s", name);
             string listMethodEntity = name + "s";
@@ -258,19 +269,28 @@ namespace EFEXCON.ExternalLookup.Core
             // Create the Finder method 
             Method getListMethod = entity.Methods.Create(listMethodName, true, false, listMethodName);
 
-            // Specify the query 
-            getListMethod.Properties.Add("RdbCommandText", "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer]");
+            // Specify the query
+            // "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer]"             
+            string queryAllItemsString = "SELECT ";
+
+            foreach(ExternalColumnReference reference in referenceList)
+            {
+                queryAllItemsString += "[" + reference.SourceName + "], ";
+            }
+            queryAllItemsString = queryAllItemsString.Substring(0, queryAllItemsString.Length - 2);
+            queryAllItemsString += " FROM [" + database + "]";
+
+            getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);
 
             // Set the command type 
             getListMethod.Properties.Add("RdbCommandType", "Text");
 
-            // Create the Customer return parameter
-            Parameter customersParameter = getListMethod.Parameters.Create(name, true, DirectionType.Return); // e.g. Customer
+            // Create the Entity return parameter
+            Parameter modelParameter = getListMethod.Parameters.Create(name, true, DirectionType.Return); // e.g. Customer
 
-            
             // Create the TypeDescriptors for the Entity return parameter 
-            TypeDescriptor returnRootCollectionTypeDescriptor = 
-                customersParameter.CreateRootTypeDescriptor(
+            TypeDescriptor returnRootCollectionTypeDescriptor =
+                modelParameter.CreateRootTypeDescriptor(
                     listMethodEntity, 
                     true, 
                     "System.Data.IDataReader, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -292,12 +312,26 @@ namespace EFEXCON.ExternalLookup.Core
                     TypeDescriptorFlags.None, 
                     null); // e.g. Customer
 
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("CustomerId", true, "System.Int32", "CustomerId", new IdentifierReference("CustomerId", new EntityReference("AdventureWorks", "Customer", catalog), catalog), null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("FirstName", true, "System.String", "FirstName", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("LastName", true, "System.String", "LastName", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("Phone", true, "System.String", "Phone", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("EmailAddress", true, "System.String", "EmailAddress", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("CompanyName", true, "System.String", "CompanyName", null, null, TypeDescriptorFlags.None, null);
+            foreach (ExternalColumnReference reference in referenceList)
+            {
+                IdentifierReference identityReference = null;
+
+                if (reference.IsKey)
+                {
+                    identityReference = new IdentifierReference(reference.SourceName, new EntityReference(lobSystemName, itemMethodEntity, catalog), catalog); // "AdventureWorks" // "Customer"
+                }
+
+                returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
+                    reference.SourceName, 
+                    true, 
+                    "System.Int32",
+                    reference.SourceName, 
+                    identityReference, 
+                    null, 
+                    TypeDescriptorFlags.None, 
+                    null
+                );
+            }
 
             getListMethod.MethodInstances.Create(listMethodName, true, returnRootCollectionTypeDescriptor, MethodInstanceType.Finder, true);
         }
@@ -308,34 +342,67 @@ namespace EFEXCON.ExternalLookup.Core
         /// </summary>
         /// <param name="name"></param>
         /// <param name="database"></param>
+        /// <param name="lobSystemName"></param>
         /// <param name="catalog"></param>
         /// <param name="entity"></param>
-        private static void CreateReadItemMethod(string name, string database, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
+        private static void CreateReadItemMethod(string name, string database, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
             string itemMethodName = "Get" + name;
             string itemMethodEntity = name;
             string listMethodEntity = name + "s";
 
+            ExternalColumnReference keyColumn = null;
+
             Method getItemMethod = entity.Methods.Create(itemMethodName, true, false, itemMethodName);
 
             // Specify the query 
-            getItemMethod.Properties.Add("RdbCommandText", "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer] WHERE [CustomerId] = @CustomerId");
+            // "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer] WHERE [CustomerId] = @CustomerId"
+            string querySingleItemString = "SELECT ";
+            string whereClause = "";
+
+            foreach (ExternalColumnReference reference in referenceList)
+            {
+                querySingleItemString += "[" + reference.SourceName + "], ";
+
+                if(reference.IsKey)
+                {
+                    keyColumn = reference;
+                    whereClause = "[" + reference.SourceName + "] = @" + reference.DestinationName;
+                }
+            }
+            querySingleItemString = querySingleItemString.Substring(0, querySingleItemString.Length - 2);
+            querySingleItemString += " FROM [" + database + "] WHERE " + whereClause;
+
+            getItemMethod.Properties.Add("RdbCommandText", querySingleItemString);
 
             // Set the command type 
             getItemMethod.Properties.Add("RdbCommandType", "Text");
 
-            // Create the CustomerID input parameter 
-            Parameter entityIDParameter = getItemMethod.Parameters.Create("@CustomerId", true, DirectionType.In);
+            // Create the EntityID input parameter 
+            if (keyColumn == null)
+                throw new NullReferenceException("keyColumn is not set.");
 
-            // Create the TypeDescriptor for the CustomerID parameter 
-            entityIDParameter.CreateRootTypeDescriptor("CustomerId", true, "System.Int32", "CustomerId", new IdentifierReference("CustomerId", new EntityReference("AdventureWorks", "Customer", catalog), catalog), null, TypeDescriptorFlags.None, null, catalog);
+            string idParameter = "@" + keyColumn.DestinationName;
+            Parameter entityIDParameter = getItemMethod.Parameters.Create(idParameter, true, DirectionType.In);
 
-            // Create the Customer return parameter 
-            Parameter customerParameter = getItemMethod.Parameters.Create("Customer", true, DirectionType.Return);
+            // Create the TypeDescriptor for the EntityID parameter 
+            entityIDParameter.CreateRootTypeDescriptor(
+                keyColumn.SourceName, 
+                true, 
+                "System.Int32",
+                keyColumn.SourceName, 
+                new IdentifierReference(keyColumn.SourceName, new EntityReference(lobSystemName, itemMethodEntity, catalog), catalog), // "AdventureWorks" // "Customer"
+                null, 
+                TypeDescriptorFlags.None, 
+                null, 
+                catalog); // "CustomerId"
 
-            // Create the TypeDescriptors for the Customer return parameter 
-            TypeDescriptor returnRootCollectionTypeDescriptor = 
-                customerParameter.CreateRootTypeDescriptor(
+            // Create the Entity return parameter 
+            Parameter modelParameter = getItemMethod.Parameters.Create(itemMethodEntity, true, DirectionType.Return); // "Customer"
+
+            // Create the TypeDescriptors for the Entity return parameter 
+            TypeDescriptor returnRootCollectionTypeDescriptor =
+                modelParameter.CreateRootTypeDescriptor(
                     listMethodEntity, 
                     true, 
                     "System.Data.IDataReader, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
@@ -357,12 +424,27 @@ namespace EFEXCON.ExternalLookup.Core
                     TypeDescriptorFlags.None, 
                     null); // e.g. Customer
 
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("CustomerId", true, "System.Int32", "CustomerId", new IdentifierReference("CustomerId", new EntityReference("AdventureWorks", "Customer", catalog), catalog), null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("FirstName", true, "System.String", "FirstName", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("LastName", true, "System.String", "LastName", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("Phone", true, "System.String", "Phone", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("EmailAddress", true, "System.String", "EmailAddress", null, null, TypeDescriptorFlags.None, null);
-            returnRootElementTypeDescriptor.ChildTypeDescriptors.Create("CompanyName", true, "System.String", "CompanyName", null, null, TypeDescriptorFlags.None, null);
+
+            foreach (ExternalColumnReference reference in referenceList)
+            {
+                IdentifierReference identityReference = null;
+
+                if (reference.IsKey)
+                {
+                    identityReference = new IdentifierReference(reference.SourceName, new EntityReference(lobSystemName, itemMethodEntity, catalog), catalog); // "AdventureWorks" // "Customer"
+                }
+
+                returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
+                    reference.SourceName,
+                    true,
+                    "System.Int32",
+                    reference.SourceName,
+                    identityReference,
+                    null,
+                    TypeDescriptorFlags.None,
+                    null
+                );
+            }
 
             // Create the specific finder method instance 
             getItemMethod.MethodInstances.Create(itemMethodName, true, returnRootElementTypeDescriptor, MethodInstanceType.SpecificFinder, true); // getCustomer
