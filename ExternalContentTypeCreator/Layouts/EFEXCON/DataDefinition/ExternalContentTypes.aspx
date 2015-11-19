@@ -51,7 +51,7 @@ External Content Types
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="Entity"></asp:Label></span>
                 <span class="table-cell">
-                    <asp:DropDownList ID="DataSourceTables" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
+                    <asp:DropDownList ID="DataSourceEntity" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
                 </span>
             </span>
         </span>
@@ -85,7 +85,7 @@ External Content Types
         </span>
 
         <div id="newFormStatus" class="status"></div>
-        <asp:Button OnClick="saveExternalContentType" OnClientClick="return checkForm() && validStructure()" Text="Save" runat="server" />
+        <asp:Button OnClick="SaveExternalContentType" OnClientClick="return checkForm() && validStructure()" Text="Save" runat="server" />
         <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
     </div>
     <div id="Status" class="status" runat="server"></div>

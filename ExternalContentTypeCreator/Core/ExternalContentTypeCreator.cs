@@ -26,7 +26,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public static List<Entity> listAllExternalContentTypes()
+        public static List<Entity> ListAllExternalContentTypes()
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -45,7 +45,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static LobSystem createLobSystem(string name, SystemType type)
+        public static LobSystem CreateLobSystem(string name, SystemType type)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -70,7 +70,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static LobSystem getLobSystem(string name)
+        public static LobSystem GetLobSystem(string name)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -95,7 +95,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Boolean deleteLobSystem(string name, SystemType type)
+        public static Boolean DeleteLobSystem(string name, SystemType type)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -124,7 +124,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public static LobSystemInstance createLobSystemInstance(LobSystem lobSystem, string server, string database, string username, string password)
+        public static LobSystemInstance CreateLobSystemInstance(LobSystem lobSystem, string server, string database, string username, string password)
         {
             LobSystemInstance lobSystemInstance = null;
 
@@ -142,15 +142,34 @@ namespace EFEXCON.ExternalLookup.Core
             }
 
             // Set the connection properties 
-            lobSystemInstance.Properties.Add("AuthenticationMode", "Credentials");
+            // The following url helps to understand the different authentication modes and the relation to the ones
+            // given in SharePoint Designer: https://technet.microsoft.com/en-us/library/ee661743.aspx#Section3
+
+            //lobSystemInstance.Properties.Add("AuthenticationMode", "Credentials");
+            //lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
+            //lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
+            //lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
+            //lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
+            //lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
+            //lobSystemInstance.Properties.Add("RdbConnection User ID", username);
+            //lobSystemInstance.Properties.Add("RdbConnection Password", password);
+            //lobSystemInstance.Properties.Add("RdbConnection Trusted_Connection", "false");
+
+            //lobSystemInstance.Properties.Add("AuthenticationMode", "PassThrough");
+            //lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
+            //lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
+            //lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
+            //lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
+            //lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
+
+            lobSystemInstance.Properties.Add("AuthenticationMode", "WindowsCredentials");
             lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
             lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
             lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
             lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
             lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
-            lobSystemInstance.Properties.Add("RdbConnection User ID", username);
-            lobSystemInstance.Properties.Add("RdbConnection Password", password);
-            lobSystemInstance.Properties.Add("RdbConnection Trusted_Connection", "false");
+            lobSystemInstance.Properties.Add("SsoApplicationId", "SQLServer");
+            lobSystemInstance.Properties.Add("SsoProviderImplementation", "Microsoft.Office.SecureStoreService.Server.SecureStoreProvider, Microsoft.Office.SecureStoreService, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c");
 
             return lobSystemInstance;
         }
@@ -159,31 +178,23 @@ namespace EFEXCON.ExternalLookup.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public static List<LobSystem> listAllLobSystems()
+        public static List<LobSystem> ListAllLobSystems()
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
             SPServiceContext context = SPServiceContext.GetContext(web.Site);
 
-            LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
-
-            List<LobSystem> result = new List<LobSystem>();
-
-            foreach (var lobSystem in availableLobSystems)
-            {
-                result.Add(lobSystem);
-            }
-
-            return result;
+           return service.GetAdministrationMetadataCatalog(context).GetLobSystems("*").ToList();
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="table"></param>
         /// <param name="referenceList"></param>
         /// <param name="lobSystem"></param>
-        public static void createNewContentType(string name, List<ExternalColumnReference> referenceList, LobSystem lobSystem)
+        public static void CreateNewContentType(string name, string table, List<ExternalColumnReference> referenceList, LobSystem lobSystem)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -213,10 +224,10 @@ namespace EFEXCON.ExternalLookup.Core
             Entity entity = Entity.Create(name, lobSystemInstanceName, true, new Version("1.0.0.0"), 10000, CacheUsage.Default, lobSystem, model, catalog);
 
             // Set the identifier
-            ExternalColumnReference keyReference = referenceList.Where(x => x.IsKey == true).First();
+            ExternalColumnReference keyReference = referenceList.First(x => x.IsKey == true);
             entity.Identifiers.Create(keyReference.DestinationName, true, keyReference.Type); // e.g. CustomerId // "System.Int32"
 
-            string database = "";
+            var database = "";
             foreach (Property prop in SqlHelper.getLobSystemInstanceProperties(lobSystem))
             {
                 if (prop.Name == "RdbConnection Initial Catalog")
@@ -227,10 +238,10 @@ namespace EFEXCON.ExternalLookup.Core
                 throw new Exception("Database name can not be set.");
 
             // Create the specific finder method to return one specific element
-            Creator.CreateReadItemMethod(name, database, lobSystem.Name, referenceList, catalog, entity);
+            Creator.CreateReadItemMethod(name, database, table, lobSystem.Name, referenceList, catalog, entity);
 
             // Create the finder method to return all rows
-            Creator.CreateReadListMethod(name, database, lobSystem.Name,referenceList, catalog, entity);
+            Creator.CreateReadListMethod(name, database, table, lobSystem.Name,referenceList, catalog, entity);
 
             // Publish the newly created Entity to the BCS Metadata Store.
             entity.Activate();
@@ -242,10 +253,12 @@ namespace EFEXCON.ExternalLookup.Core
         /// </summary>
         /// <param name="name"></param>
         /// <param name="database"></param>
-        /// /// <param name="lobSystem"></param>
+        /// <param name="table"></param>
+        /// <param name="lobSystemName"></param>
+        /// <param name="referenceList"></param>
         /// <param name="catalog"></param>
         /// <param name="entity"></param>
-        private static void CreateReadListMethod(string name, string database, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
+        private static void CreateReadListMethod(string name, string database, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
             string listMethodName = String.Format("Get{0}s", name);
             string listMethodEntity = name + "s";
@@ -263,7 +276,7 @@ namespace EFEXCON.ExternalLookup.Core
                 queryAllItemsString += "[" + reference.SourceName + "], ";
             }
             queryAllItemsString = queryAllItemsString.Substring(0, queryAllItemsString.Length - 2);
-            queryAllItemsString += " FROM [" + database + "]";
+            queryAllItemsString += " FROM [" + database + "][dbo][" + table + "]";
 
             getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);
 
@@ -327,10 +340,11 @@ namespace EFEXCON.ExternalLookup.Core
         /// </summary>
         /// <param name="name"></param>
         /// <param name="database"></param>
+        /// <param name="table"></param>
         /// <param name="lobSystemName"></param>
         /// <param name="catalog"></param>
         /// <param name="entity"></param>
-        private static void CreateReadItemMethod(string name, string database, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
+        private static void CreateReadItemMethod(string name, string database, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
             string itemMethodName = "Get" + name;
             string itemMethodEntity = name;
@@ -356,7 +370,7 @@ namespace EFEXCON.ExternalLookup.Core
                 }
             }
             querySingleItemString = querySingleItemString.Substring(0, querySingleItemString.Length - 2);
-            querySingleItemString += " FROM [" + database + "] WHERE " + whereClause;
+            querySingleItemString += " FROM [" + database + "][dbo][" + table + "] WHERE " + whereClause;
 
             getItemMethod.Properties.Add("RdbCommandText", querySingleItemString);
 
@@ -368,10 +382,10 @@ namespace EFEXCON.ExternalLookup.Core
                 throw new NullReferenceException("keyColumn is not set.");
 
             string idParameter = "@" + keyColumn.DestinationName;
-            Parameter entityIDParameter = getItemMethod.Parameters.Create(idParameter, true, DirectionType.In);
+            Parameter entityIdParameter = getItemMethod.Parameters.Create(idParameter, true, DirectionType.In);
 
             // Create the TypeDescriptor for the EntityID parameter 
-            entityIDParameter.CreateRootTypeDescriptor(
+            entityIdParameter.CreateRootTypeDescriptor(
                 keyColumn.SourceName, 
                 true,
                 keyColumn.Type,
@@ -440,7 +454,7 @@ namespace EFEXCON.ExternalLookup.Core
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static Boolean deleteContentType(string name)
+        public static Boolean DeleteContentType(string name)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);

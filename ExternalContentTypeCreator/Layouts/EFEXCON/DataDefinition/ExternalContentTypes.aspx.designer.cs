@@ -85,13 +85,13 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
         protected global::System.Web.UI.WebControls.Label DataSourceEntityLabel;
         
         /// <summary>
-        /// DataSourceTables control.
+        /// DataSourceEntity control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DataSourceTables;
+        protected global::System.Web.UI.WebControls.DropDownList DataSourceEntity;
         
         /// <summary>
         /// DataSourceStructureTable control.

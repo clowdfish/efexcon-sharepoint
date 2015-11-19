@@ -5,6 +5,7 @@ using Microsoft.SharePoint.WebControls;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Microsoft.BusinessData.MetadataModel;
+using EFEXCON.ExternalLookup.Helper;
 
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 {
@@ -40,14 +41,18 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
             // TODO Check server format
 
+            // var connectionString =  
+            //    String.Format("Server={0};Database={1};User Id={2};Password={3};",
+            //        server, database, username, password);
+
             var connectionString = 
-                String.Format("Server={0};Database={1};User Id={2};Password={3};", 
-                    server, database, username, password);
+                String.Format("Server={0};Database={1};Integrated Security=SSPI;", //" Trusted_Connection=True;",
+                server, database);
 
             if(connectionStringIsValid(connectionString))
             {
-                var lobSystem = Creator.createLobSystem(title, SystemType.Database);
-                var lobSystemInstance = Creator.createLobSystemInstance(lobSystem, server, database, username, password);
+                var lobSystem = Creator.CreateLobSystem(title, SystemType.Database);
+                var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, username, password);
 
                 if(lobSystem != null && lobSystemInstance != null)
                 {                     
@@ -69,10 +74,13 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (new Impersonator("dev", "CONTOSO", "mark123?"))
                 {
-                    connection.Open();
-                    return connection.State == ConnectionState.Open;
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        return connection.State == ConnectionState.Open;
+                    }
                 }
             }
             catch(Exception e)
@@ -90,7 +98,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             DataSourceContainer.InnerHtml = "";
 
             int counter = 0;
-            foreach (var lobSystem in Creator.listAllLobSystems())
+            foreach (var lobSystem in Creator.ListAllLobSystems())
             {
                 var separator = new LiteralControl("<div></div>");
 
@@ -125,7 +133,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         protected void deleteLobSystem(object sender, CommandEventArgs e)
         {
             string lobName = e.CommandArgument.ToString();
-            var deleted = Creator.deleteLobSystem(lobName, SystemType.Database);
+            var deleted = Creator.DeleteLobSystem(lobName, SystemType.Database);
 
             if(deleted)
             {                

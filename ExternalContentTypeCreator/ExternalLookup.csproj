@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\ClassHelper.cs" />
+    <Compile Include="Helper\Impersonator.cs" />
     <Compile Include="Helper\SqlHelper.cs" />
     <Compile Include="Core\ExternalContentTypeCreator.cs" />
     <Compile Include="Helper\Constants.cs" />

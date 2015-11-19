@@ -23,8 +23,8 @@ namespace EFEXCON.ExternalLookup.Helper
         {
             string server = "";
             string database = "";
-            string username = "";
-            string password = "";
+            //string username = "";
+            //string password = "";
 
             foreach (Property prop in SqlHelper.getLobSystemInstanceProperties(lobSystem))
             {
@@ -34,11 +34,11 @@ namespace EFEXCON.ExternalLookup.Helper
                 if (prop.Name == "RdbConnection Initial Catalog")
                     database = prop.Value.ToString();
 
-                if (prop.Name == "RdbConnection User ID")
-                    username = prop.Value.ToString();
+                //if (prop.Name == "RdbConnection User ID")
+                //    username = prop.Value.ToString();
 
-                if (prop.Name == "RdbConnection Password")
-                    password = prop.Value.ToString();
+                //if (prop.Name == "RdbConnection Password")
+                //    password = prop.Value.ToString();
             }
 
             if (String.IsNullOrEmpty(server))
@@ -47,15 +47,20 @@ namespace EFEXCON.ExternalLookup.Helper
             if (String.IsNullOrEmpty(database))
                 throw new ArgumentNullException("Database string is not defined.");
 
-            if (String.IsNullOrEmpty(username))
-                throw new ArgumentNullException("Username string is not defined.");
+            //if (String.IsNullOrEmpty(username))
+            //    throw new ArgumentNullException("Username string is not defined.");
 
-            if (String.IsNullOrEmpty(password))
-                throw new ArgumentNullException("Password string is not defined.");
+            //if (String.IsNullOrEmpty(password))
+            //    throw new ArgumentNullException("Password string is not defined.");
 
+            //return String.Format("Server={0};Database={1};User Id={2};Password={3};",
+            //        server, database, username, password);
 
-            return String.Format("Server={0};Database={1};User Id={2};Password={3};",
-                    server, database, username, password);
+            // Good read on connection strings and integrated security:
+            // http://stackoverflow.com/questions/1229691/difference-between-integrated-security-true-and-integrated-security-sspi
+
+            return String.Format("Server={0};Database={1};Integrated Security=SSPI;",
+                  server, database);
         }
 
         public static Microsoft.SharePoint.BusinessData.Administration.PropertyCollection getLobSystemInstanceProperties(LobSystem lobSystem)
@@ -81,21 +86,24 @@ namespace EFEXCON.ExternalLookup.Helper
 
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (new Impersonator("dev", "CONTOSO", "mark123?"))
                 {
-                    var commandString = String.Format("SELECT TABLE_NAME FROM {0}.INFORMATION_SCHEMA.Tables", database);
-
-                    SqlCommand cmd = new SqlCommand(commandString, connection);
-                    connection.Open();
-
-                    SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-                    var result = new List<String>();
-                    while (reader.Read())
+                    using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        result.Add(reader.GetString(0));
-                    }
+                        var commandString = String.Format("SELECT TABLE_NAME FROM {0}.INFORMATION_SCHEMA.Tables", database);
 
-                    return result;
+                        SqlCommand cmd = new SqlCommand(commandString, connection);
+                        connection.Open();
+
+                        SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                        var result = new List<String>();
+                        while (reader.Read())
+                        {
+                            result.Add(reader.GetString(0));
+                        }
+
+                        return result;
+                    }   
                 }
             }
             catch (Exception e)
@@ -110,27 +118,30 @@ namespace EFEXCON.ExternalLookup.Helper
 
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (new Impersonator("dev", "CONTOSO", "mark123?"))
                 {
-                    var commandString = String.Format("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{0}'", tableName);
-
-                    SqlCommand cmd = new SqlCommand(commandString, connection);
-                    connection.Open();
-
-                    SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
-
-                    var result = new List<TableColumn>();
-                    while (reader.Read())
+                    using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        result.Add(new TableColumn()
-                        {
-                            Name = reader.GetString(0),
-                            Type = reader.GetString(1)
-                        });
-                    }
+                        var commandString = String.Format("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{0}'", tableName);
 
-                    return result;
-                }
+                        SqlCommand cmd = new SqlCommand(commandString, connection);
+                        connection.Open();
+
+                        SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+                        var result = new List<TableColumn>();
+                        while (reader.Read())
+                        {
+                            result.Add(new TableColumn()
+                            {
+                                Name = reader.GetString(0),
+                                Type = reader.GetString(1)
+                            });
+                        }
+
+                        return result;
+                    }
+                }           
             }
             catch (Exception e)
             {

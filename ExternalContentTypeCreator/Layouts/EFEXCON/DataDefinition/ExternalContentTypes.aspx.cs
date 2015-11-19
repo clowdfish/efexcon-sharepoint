@@ -15,7 +15,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            listExternalContentTypes();
+            ListExternalContentTypes();
 
             if (!Page.IsPostBack)
             {
@@ -23,7 +23,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 NewForm.Style.Add("display", "none");
                 DataSourceStructureTable.Style.Add("display", "none");
 
-                LobSystems.DataSource = Creator.listAllLobSystems().Select(x => x.Name);
+                LobSystems.DataSource = Creator.ListAllLobSystems().Select(x => x.Name);
                 LobSystems.DataBind();
             }
             else
@@ -33,24 +33,24 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                 if (!String.IsNullOrEmpty(LobSystems.SelectedItem.Text))
                 {
-                    LobSystem lobSystem = Creator.getLobSystem(LobSystems.SelectedItem.Text);
+                    LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
 
                     if (lobSystem == null)
                         throw new NullReferenceException("LobSystem can not be found.");
 
-                    if (DataSourceTables.DataSource == null)
+                    if (DataSourceEntity.DataSource == null)
                     {
-                        DataSourceTables.DataSource = SqlHelper.getTablesForLobSystem(lobSystem);
-                        DataSourceTables.DataBind();
-                    }                         
-       
-                    if (!String.IsNullOrEmpty(DataSourceTables.SelectedItem.Text))
+                        DataSourceEntity.DataSource = SqlHelper.getTablesForLobSystem(lobSystem);
+                        DataSourceEntity.DataBind();
+                    }
+
+                    if (!String.IsNullOrEmpty(DataSourceEntity.SelectedItem.Text))
                     {
                         DataSourceStructureTable.Style.Add("display", "block");
 
                         if (DataSourceStructure.DataSource == null)
                         {
-                            DataSourceStructure.DataSource = SqlHelper.getTableStructure(lobSystem, DataSourceTables.SelectedItem.Text);
+                            DataSourceStructure.DataSource = SqlHelper.getTableStructure(lobSystem, DataSourceEntity.SelectedItem.Text);
                             DataSourceStructure.DataBind();
                         }
                     }
@@ -61,17 +61,16 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// <summary>
         /// 
         /// </summary>
-        protected void listExternalContentTypes()
+        protected void ListExternalContentTypes()
         {
             ExternalContentTypesContainer.InnerHtml = "";
 
             int counter = 0;
-            foreach (Entity contentType in Creator.listAllExternalContentTypes())
+            foreach (Entity contentType in Creator.ListAllExternalContentTypes())
             {
                 var separator = new LiteralControl("<div></div>");
 
-                var label = new Label();
-                label.Text = contentType.Name + " ";
+                var label = new Label { Text = contentType.Name + " " };
                 ExternalContentTypesContainer.Controls.Add(label);
 
                 var link = new LinkButton
@@ -80,7 +79,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     CommandArgument = contentType.Name,
                     Text = "delete"
                 };
-                link.Command += deleteContentType;
+                link.Command += DeleteContentType;
                 ExternalContentTypesContainer.Controls.Add(link);
 
                 ExternalContentTypesContainer.Controls.Add(separator);
@@ -98,7 +97,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void saveExternalContentType(object sender, EventArgs e)
+        protected void SaveExternalContentType(object sender, EventArgs e)
         {
             // hide form
             ShowNewFormButton.Style.Add("display", "block");
@@ -123,20 +122,16 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 }
             }
 
-            List<ExternalColumnReference> resultList = new List<ExternalColumnReference>();
-            foreach (string item in list)
-            {
-                if (checkList.Contains(item + "_check"))
+            List<ExternalColumnReference> resultList = (
+                from item in list
+                where checkList.Contains(item + "_check")
+                select new ExternalColumnReference()
                 {
-                    resultList.Add(new ExternalColumnReference()
-                    {
-                        SourceName = item,
-                        DestinationName = Request.Form["struct_" + item],
-                        Type = Request.Form["struct_" + item + "_type"],
-                        IsKey = String.IsNullOrEmpty(Request.Form["struct_" + item + "_key"]) ? false : true
-                    });                  
-                }
-            }
+                    SourceName = item, 
+                    DestinationName = Request.Form["struct_" + item], 
+                    Type = Request.Form["struct_" + item + "_type"], 
+                    IsKey = !String.IsNullOrEmpty(Request.Form["struct_" + item + "_key"])
+                }).ToList();
 
             /*
             foreach(ExternalColumnReference reference in resultList)
@@ -151,12 +146,13 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             */
 
             string newContentTypeName = NewContentTypeName.Value;
-            LobSystem lobSystem = Creator.getLobSystem(LobSystems.SelectedItem.Text);
+            string tableName = DataSourceEntity.SelectedItem.Text;
+            LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
 
             // start creation of new external content type
-            Creator.createNewContentType(newContentTypeName, resultList, lobSystem);
+            Creator.CreateNewContentType(newContentTypeName, tableName, resultList, lobSystem);
 
-            listExternalContentTypes();
+            ListExternalContentTypes();
         }
 
         /// <summary>
@@ -164,17 +160,17 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void deleteContentType(object sender, CommandEventArgs e)
+        protected void DeleteContentType(object sender, CommandEventArgs e)
         {
             string ectName = e.CommandArgument.ToString();
-            var deleted = Creator.deleteContentType(ectName);
+            var deleted = Creator.DeleteContentType(ectName);
 
             ShowNewFormButton.Style.Add("display", "block");
             NewForm.Style.Add("display", "none");
 
             if (deleted)
             {
-                listExternalContentTypes();
+                ListExternalContentTypes();
             }
             else
             {
