@@ -276,7 +276,7 @@ namespace EFEXCON.ExternalLookup.Core
                 queryAllItemsString += "[" + reference.SourceName + "], ";
             }
             queryAllItemsString = queryAllItemsString.Substring(0, queryAllItemsString.Length - 2);
-            queryAllItemsString += " FROM [" + database + "][dbo][" + table + "]";
+            queryAllItemsString += " FROM [" + database + "].[dbo].[" + table + "]";
 
             getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);
 
@@ -370,7 +370,7 @@ namespace EFEXCON.ExternalLookup.Core
                 }
             }
             querySingleItemString = querySingleItemString.Substring(0, querySingleItemString.Length - 2);
-            querySingleItemString += " FROM [" + database + "][dbo][" + table + "] WHERE " + whereClause;
+            querySingleItemString += " FROM [" + database + "].[dbo].[" + table + "] WHERE " + whereClause;
 
             getItemMethod.Properties.Add("RdbCommandText", querySingleItemString);
 

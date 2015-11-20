@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
-using System.Collections;
 using System.Linq;
 
 namespace EFEXCON.ExternalLookup.Helper
@@ -19,42 +18,25 @@ namespace EFEXCON.ExternalLookup.Helper
 
         }
 
-        private static string getDatabaseConnectionString(LobSystem lobSystem)
+        private static string GetDatabaseConnectionString(LobSystem lobSystem)
         {
             string server = "";
             string database = "";
-            //string username = "";
-            //string password = "";
 
-            foreach (Property prop in SqlHelper.getLobSystemInstanceProperties(lobSystem))
+            foreach (Property prop in SqlHelper.GetLobSystemInstanceProperties(lobSystem))
             {
                 if (prop.Name == "RdbConnection Data Source")
                     server = prop.Value.ToString();
 
                 if (prop.Name == "RdbConnection Initial Catalog")
                     database = prop.Value.ToString();
-
-                //if (prop.Name == "RdbConnection User ID")
-                //    username = prop.Value.ToString();
-
-                //if (prop.Name == "RdbConnection Password")
-                //    password = prop.Value.ToString();
             }
 
             if (String.IsNullOrEmpty(server))
-                throw new ArgumentNullException("Server string is not defined.");
+                throw new NoNullAllowedException("Server string is not defined.");
 
             if (String.IsNullOrEmpty(database))
-                throw new ArgumentNullException("Database string is not defined.");
-
-            //if (String.IsNullOrEmpty(username))
-            //    throw new ArgumentNullException("Username string is not defined.");
-
-            //if (String.IsNullOrEmpty(password))
-            //    throw new ArgumentNullException("Password string is not defined.");
-
-            //return String.Format("Server={0};Database={1};User Id={2};Password={3};",
-            //        server, database, username, password);
+                throw new NoNullAllowedException("Database string is not defined.");         
 
             // Good read on connection strings and integrated security:
             // http://stackoverflow.com/questions/1229691/difference-between-integrated-security-true-and-integrated-security-sspi
@@ -63,11 +45,16 @@ namespace EFEXCON.ExternalLookup.Helper
                   server, database);
         }
 
-        public static Microsoft.SharePoint.BusinessData.Administration.PropertyCollection getLobSystemInstanceProperties(LobSystem lobSystem)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lobSystem"></param>
+        /// <returns></returns>
+        public static Microsoft.SharePoint.BusinessData.Administration.PropertyCollection GetLobSystemInstanceProperties(LobSystem lobSystem)
         {
             List<LobSystemInstance> list = lobSystem.LobSystemInstances.ToList<LobSystemInstance>();
 
-            if (list.Count() == 0)
+            if (!list.Any())
                 throw new Exception("No LobSystemInstance available for LobSystem.");
 
             LobSystemInstance instance = list[0];
@@ -75,14 +62,19 @@ namespace EFEXCON.ExternalLookup.Helper
             return instance.Properties;
         }
 
-        public static List<String> getTablesForLobSystem(LobSystem lobSystem)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lobSystem"></param>
+        /// <returns></returns>
+        public static List<String> GetTablesForLobSystem(LobSystem lobSystem)
         {
-            var connectionString = SqlHelper.getDatabaseConnectionString(lobSystem);
+            var connectionString = SqlHelper.GetDatabaseConnectionString(lobSystem);
 
             string database = connectionString.Split(';').Where(x => x.StartsWith("Database")).Select(x => x.Split('=')[1]).ToArray()[0];
       
             if (String.IsNullOrEmpty(database))
-                throw new ArgumentNullException("Database string is not defined.");
+                throw new NoNullAllowedException("Database string is not defined.");
 
             try
             {
@@ -112,9 +104,15 @@ namespace EFEXCON.ExternalLookup.Helper
             }
         }
 
-        public static List<TableColumn> getTableStructure(LobSystem lobSystem, string tableName)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lobSystem"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public static List<TableColumn> GetTableStructure(LobSystem lobSystem, string tableName)
         {
-            var connectionString = SqlHelper.getDatabaseConnectionString(lobSystem);
+            var connectionString = SqlHelper.GetDatabaseConnectionString(lobSystem);
 
             try
             {

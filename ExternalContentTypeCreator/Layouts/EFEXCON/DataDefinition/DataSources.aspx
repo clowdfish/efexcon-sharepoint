@@ -63,7 +63,7 @@ Data Sources
             </span>
         </span>
         <div id="newFormStatus" class="status"></div>
-        <asp:Button OnClick="saveDataSource" OnClientClick="return checkForm()" Text="Save" runat="server" />
+        <asp:Button OnClick="SaveDataSource" OnClientClick="return checkForm()" Text="Save" runat="server" />
         <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
     </div>
     <div id="Status" class="status" runat="server"></div>

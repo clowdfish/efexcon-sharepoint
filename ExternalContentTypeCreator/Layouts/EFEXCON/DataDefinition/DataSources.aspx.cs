@@ -18,7 +18,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             ShowNewFormButton.Style.Add("display", "block");
             NewForm.Style.Add("display", "none");
 
-            listLobSystems();
+            ListLobSystems();
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void saveDataSource(object sender, EventArgs e)
+        protected void SaveDataSource(object sender, EventArgs e)
         {
             string title = Request.Form["title"];
             string type = Request.Form["dataType"];
@@ -39,24 +39,18 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             // Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
             // check out http://stackoverflow.com/questions/8243008/format-of-the-initialization-string-does-not-conform-to-specification-starting-a
 
-            // TODO Check server format
-
-            // var connectionString =  
-            //    String.Format("Server={0};Database={1};User Id={2};Password={3};",
-            //        server, database, username, password);
-
             var connectionString = 
-                String.Format("Server={0};Database={1};Integrated Security=SSPI;", //" Trusted_Connection=True;",
+                String.Format("Server={0};Database={1};Integrated Security=SSPI;",
                 server, database);
 
-            if(connectionStringIsValid(connectionString))
+            if(ConnectionStringIsValid(connectionString))
             {
                 var lobSystem = Creator.CreateLobSystem(title, SystemType.Database);
                 var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, username, password);
 
                 if(lobSystem != null && lobSystemInstance != null)
                 {                     
-                    listLobSystems();
+                    ListLobSystems();
                 }
                 else
                 {
@@ -70,7 +64,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        protected Boolean connectionStringIsValid(string connectionString)
+        protected Boolean ConnectionStringIsValid(string connectionString)
         {
             try
             {
@@ -93,7 +87,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// <summary>
         /// 
         /// </summary>
-        protected void listLobSystems()
+        protected void ListLobSystems()
         {
             DataSourceContainer.InnerHtml = "";
 
@@ -112,7 +106,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     CommandArgument = lobSystem.Name,
                     Text = "delete"
                 };
-                link.Command += deleteLobSystem;
+                link.Command += DeleteLobSystem;
                 DataSourceContainer.Controls.Add(link);
 
                 DataSourceContainer.Controls.Add(separator);
@@ -130,14 +124,14 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void deleteLobSystem(object sender, CommandEventArgs e)
+        protected void DeleteLobSystem(object sender, CommandEventArgs e)
         {
             string lobName = e.CommandArgument.ToString();
             var deleted = Creator.DeleteLobSystem(lobName, SystemType.Database);
 
             if(deleted)
             {                
-                listLobSystems();
+                ListLobSystems();
             }
             else
             {
