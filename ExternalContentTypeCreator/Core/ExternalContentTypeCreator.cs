@@ -16,12 +16,6 @@ namespace EFEXCON.ExternalLookup.Core
     /// </summary>
     public class Creator
     {
-
-        public void Initialize()
-        {
-            
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -217,21 +211,11 @@ namespace EFEXCON.ExternalLookup.Core
             ExternalColumnReference keyReference = referenceList.First(x => x.IsKey == true);
             entity.Identifiers.Create(keyReference.DestinationName, true, keyReference.Type); // e.g. CustomerId // "System.Int32"
 
-            var database = "";
-            foreach (Property prop in SqlHelper.GetLobSystemInstanceProperties(lobSystem))
-            {
-                if (prop.Name == "RdbConnection Initial Catalog")
-                    database = prop.Value.ToString();
-            }
-
-            if (String.IsNullOrEmpty(database))
-                throw new Exception("Database name can not be set.");
-
             // Create the specific finder method to return one specific element
-            Creator.CreateReadItemMethod(name, database, table, lobSystem.Name, referenceList, catalog, entity);
+            Creator.CreateReadItemMethod(name, table, lobSystem.Name, referenceList, catalog, entity);
 
             // Create the finder method to return all rows
-            Creator.CreateReadListMethod(name, database, table, lobSystem.Name,referenceList, catalog, entity);
+            Creator.CreateReadListMethod(name, table, lobSystem.Name,referenceList, catalog, entity);
 
             // Publish the newly created Entity to the BCS Metadata Store.
             entity.Activate();
@@ -242,13 +226,12 @@ namespace EFEXCON.ExternalLookup.Core
         /// The finder Method returns all of the rows of data from the data source which its query defines.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="database"></param>
         /// <param name="table"></param>
         /// <param name="lobSystemName"></param>
         /// <param name="referenceList"></param>
         /// <param name="catalog"></param>
         /// <param name="entity"></param>
-        private static void CreateReadListMethod(string name, string database, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
+        private static void CreateReadListMethod(string name, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
             string listMethodName = String.Format("Get{0}s", name);
             string listMethodEntity = name + "s";
@@ -266,7 +249,7 @@ namespace EFEXCON.ExternalLookup.Core
                 queryAllItemsString += "[" + reference.SourceName + "], ";
             }
             queryAllItemsString = queryAllItemsString.Substring(0, queryAllItemsString.Length - 2);
-            queryAllItemsString += " FROM [" + database + "].[dbo].[" + table + "]";
+            queryAllItemsString += " FROM [" + table + "]";
 
             getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);
 
@@ -329,12 +312,11 @@ namespace EFEXCON.ExternalLookup.Core
         /// The specific finder Method returns exactly one row of data from the data source, given an identifier.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="database"></param>
         /// <param name="table"></param>
         /// <param name="lobSystemName"></param>
         /// <param name="catalog"></param>
         /// <param name="entity"></param>
-        private static void CreateReadItemMethod(string name, string database, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
+        private static void CreateReadItemMethod(string name, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
             string itemMethodName = "Get" + name;
             string itemMethodEntity = name;
@@ -360,7 +342,7 @@ namespace EFEXCON.ExternalLookup.Core
                 }
             }
             querySingleItemString = querySingleItemString.Substring(0, querySingleItemString.Length - 2);
-            querySingleItemString += " FROM [" + database + "].[dbo].[" + table + "] WHERE " + whereClause;
+            querySingleItemString += " FROM [" + table + "] WHERE " + whereClause;
 
             getItemMethod.Properties.Add("RdbCommandText", querySingleItemString);
 

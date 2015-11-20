@@ -43,13 +43,21 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             // Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
             // check out http://stackoverflow.com/questions/8243008/format-of-the-initialization-string-does-not-conform-to-specification-starting-a
 
-           var credentials = new SecureStoreHelper(sssId, providerImplementation).GetCredentials();
+            Credentials credentials = null;
+            try
+            {
+                credentials = new SecureStoreHelper(sssId, providerImplementation).GetCredentials();
+            }
+            catch(Exception ex)
+            {
+                Status.InnerHtml = "<div class='status error'>Could not create access credentials: "+ ex + "</div>";
+            }
 
             var connectionString = 
                 String.Format("Server={0};Database={1};Integrated Security=SSPI;",
                 server, database);
 
-            if(ConnectionStringIsValid(credentials, connectionString))
+            if(credentials != null && ConnectionStringIsValid(credentials, connectionString))
             {
                 var lobSystem = Creator.CreateLobSystem(title, SystemType.Database);
                 var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, sssId, providerImplementation);

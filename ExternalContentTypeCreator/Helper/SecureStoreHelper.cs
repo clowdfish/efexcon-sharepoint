@@ -59,7 +59,12 @@ namespace EFEXCON.ExternalLookup.Helper
                 // Username and password have been read. 
                 if (secureUsername != null && securePassword != null)
                 {
-                    var userArray = SecureStringToString(secureUsername).Split('\\');
+                    var loginName = SecureStringToString(secureUsername);
+
+                    if (!loginName.Contains("\\"))
+                        throw new FormatException("Login name does not include domain information.");
+
+                    var userArray = loginName.Split('\\');
 
                     var domain = userArray[0];
                     var username = userArray[1];
