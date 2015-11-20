@@ -43,15 +43,15 @@ External Content Types
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="DataSourceLabel" runat="server" Text="Type"></asp:Label></span>
                 <span class="table-cell">
-                    <asp:DropDownList ID="LobSystems" AutoPostBack="true" runat="server" AppendDataBoundItems="true" Width="100%">
-                        <asp:ListItem></asp:ListItem>
+                    <asp:DropDownList ID="LobSystems" OnSelectedIndexChanged="LobSystems_SelectedIndexChanged" AppendDataBoundItems="true" AutoPostBack="true" runat="server" Width="100%">
+                        <asp:ListItem Value="-1">-- SELECT --</asp:ListItem>
                     </asp:DropDownList>
                 </span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="Entity"></asp:Label></span>
+                <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="Table"></asp:Label></span>
                 <span class="table-cell">
-                    <asp:DropDownList ID="DataSourceEntity" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
+                    <asp:DropDownList ID="DataSourceEntity" OnSelectedIndexChanged="DataSourceEntity_SelectedIndexChanged" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
                 </span>
             </span>
         </span>

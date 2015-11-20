@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.BusinessData.Infrastructure.SecureStore;
 using System.Runtime.InteropServices;
 using System.Security;
+using Microsoft.SharePoint.BusinessData.Administration;
 
 namespace EFEXCON.ExternalLookup.Helper
 {
@@ -20,6 +21,39 @@ namespace EFEXCON.ExternalLookup.Helper
 
             // "Microsoft.Office.SecureStoreService.Server.SecureStoreProvider, Microsoft.Office.SecureStoreService, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"
             _providerImplementation = providerImplementation;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lobSystem"></param>
+        /// <returns></returns>
+        public static Credentials GetCredentialsFromLobSystem(LobSystem lobSystem)
+        {
+            var sssId = "";
+            var providerimplementation = "";
+
+            foreach (Property prop in SqlHelper.GetLobSystemInstanceProperties(lobSystem))
+            {
+                if (prop.Name == "SsoApplicationId")
+                    sssId = prop.Value.ToString();
+
+                if (prop.Name == "SsoProviderImplementation")
+                    providerimplementation = prop.Value.ToString();
+            }
+
+            if (String.IsNullOrEmpty(sssId))
+                throw new Exception("Secure Store Application ID can not be identified.");
+
+            if (String.IsNullOrEmpty(providerimplementation))
+                throw new Exception("Provider implementation can not be identified.");
+
+            var credentials = new SecureStoreHelper(sssId, providerimplementation).GetCredentials();
+
+            if (credentials == null)
+                throw new NoNullAllowedException("Credentials could not be retrieved from Secure Store Service.");
+
+            return credentials;
         }
 
         /// <summary>

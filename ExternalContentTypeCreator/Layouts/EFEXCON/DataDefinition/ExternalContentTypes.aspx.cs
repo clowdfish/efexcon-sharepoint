@@ -30,56 +30,65 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             else
             {
                 ShowNewFormButton.Style.Add("display", "none");
-                NewForm.Style.Add("display", "block");
-
-                if (!String.IsNullOrEmpty(LobSystems.SelectedItem.Text))
-                {
-                    LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
-
-                    if (lobSystem == null)
-                        throw new NullReferenceException("LobSystem can not be found.");
-
-                    var sssId = "";
-                    var providerimplementation = "";
-
-                    foreach (Property prop in SqlHelper.GetLobSystemInstanceProperties(lobSystem))
-                    {
-                        if (prop.Name == "SsoApplicationId")
-                            sssId = prop.Value.ToString();
-
-                        if (prop.Name == "SsoProviderImplementation")
-                            providerimplementation = prop.Value.ToString();
-                    }
-
-                    if (String.IsNullOrEmpty(sssId))
-                        throw new Exception("Secure Store Application ID can not be identified.");
-
-                    if (String.IsNullOrEmpty(providerimplementation))
-                        throw new Exception("Provider implementation can not be identified.");
-
-                    var credentials = new SecureStoreHelper(sssId, providerimplementation).GetCredentials();
-
-                    if(credentials == null)
-                        throw new NoNullAllowedException("Credentials could not be retrieved from Secure Store Service.");
-
-                    if (DataSourceEntity.DataSource == null)
-                    {
-                        DataSourceEntity.DataSource = SqlHelper.GetTablesForLobSystem(lobSystem, credentials);
-                        DataSourceEntity.DataBind();
-                    }
-
-                    if (!String.IsNullOrEmpty(DataSourceEntity.SelectedItem.Text))
-                    {
-                        DataSourceStructureTable.Style.Add("display", "block");
-
-                        if (DataSourceStructure.DataSource == null)
-                        {
-                            DataSourceStructure.DataSource = SqlHelper.GetTableStructure(lobSystem, credentials, DataSourceEntity.SelectedItem.Text);
-                            DataSourceStructure.DataBind();
-                        }
-                    }
-                }
+                NewForm.Style.Add("display", "block");               
             }
+        }
+
+        protected void LobSystems_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (LobSystems.SelectedItem.Value != (-1).ToString() && !String.IsNullOrEmpty(LobSystems.SelectedItem.Text))
+            {
+                // remove select instruction items
+                LobSystems.Items.RemoveAt(0);
+
+                LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
+
+                if (lobSystem == null)
+                    throw new NullReferenceException("LobSystem can not be found.");
+
+                var credentials = SecureStoreHelper.GetCredentialsFromLobSystem(lobSystem);
+
+                DataSourceEntity.Items.Add(new ListItem
+                {
+                    Text = "-- SELECT --",
+                    Value = "-1"
+                });
+
+                DataSourceEntity.DataSource = SqlHelper.GetTablesForLobSystem(lobSystem, credentials);
+                DataSourceEntity.DataBind();
+            }
+            else
+            {
+                DataSourceEntity.DataSource = null;
+                DataSourceEntity.DataBind();
+                DataSourceEntity.Items.Clear();                
+
+                DataSourceStructure.DataSource = null;
+                DataSourceStructure.DataBind();
+            }
+        }
+
+        protected void DataSourceEntity_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (DataSourceEntity.SelectedItem.Value != (-1).ToString() && !String.IsNullOrEmpty(DataSourceEntity.SelectedItem.Text))
+            {
+                DataSourceStructureTable.Style.Add("display", "block");
+
+                LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
+
+                if (lobSystem == null)
+                    throw new NullReferenceException("LobSystem can not be found.");
+
+                var credentials = SecureStoreHelper.GetCredentialsFromLobSystem(lobSystem);
+
+                DataSourceStructure.DataSource = SqlHelper.GetTableStructure(lobSystem, credentials, DataSourceEntity.SelectedItem.Text);
+                DataSourceStructure.DataBind();
+            }      
+            else
+            {
+                DataSourceStructure.DataSource = null;
+                DataSourceStructure.DataBind();
+            }     
         }
 
         /// <summary>
