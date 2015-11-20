@@ -2,6 +2,12 @@
 
 namespace EFEXCON.ExternalLookup.Helper
 {
+    public class TableColumn
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+    }
+
     public class ExternalColumnReference
     {
         public string SourceName { get; set; }

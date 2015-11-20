@@ -107,8 +107,15 @@ namespace EFEXCON.ExternalLookup.Core
             {
                 if (lobSystem.Name == name && lobSystem.SystemType == type)
                 {
-                    lobSystem.Delete();
-                    return true;
+                    try
+                    {
+                        lobSystem.Delete();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -121,10 +128,10 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="lobSystem"></param>
         /// <param name="server"></param>
         /// <param name="database"></param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
+        /// <param name="sssId"></param>
+        /// <param name="providerImplementation"></param>
         /// <returns></returns>
-        public static LobSystemInstance CreateLobSystemInstance(LobSystem lobSystem, string server, string database, string username, string password)
+        public static LobSystemInstance CreateLobSystemInstance(LobSystem lobSystem, string server, string database, string sssId, string providerImplementation)
         {
             LobSystemInstance lobSystemInstance = null;
 
@@ -145,31 +152,14 @@ namespace EFEXCON.ExternalLookup.Core
             // The following url helps to understand the different authentication modes and the relation to the ones
             // given in SharePoint Designer: https://technet.microsoft.com/en-us/library/ee661743.aspx#Section3
 
-            //lobSystemInstance.Properties.Add("AuthenticationMode", "Credentials");
-            //lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
-            //lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
-            //lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
-            //lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
-            //lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
-            //lobSystemInstance.Properties.Add("RdbConnection User ID", username);
-            //lobSystemInstance.Properties.Add("RdbConnection Password", password);
-            //lobSystemInstance.Properties.Add("RdbConnection Trusted_Connection", "false");
-
-            //lobSystemInstance.Properties.Add("AuthenticationMode", "PassThrough");
-            //lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
-            //lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
-            //lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
-            //lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
-            //lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
-
             lobSystemInstance.Properties.Add("AuthenticationMode", "WindowsCredentials");
             lobSystemInstance.Properties.Add("DatabaseAccessProvider", "SqlServer");
             lobSystemInstance.Properties.Add("RdbConnection Data Source", server);
             lobSystemInstance.Properties.Add("RdbConnection Initial Catalog", database);
             lobSystemInstance.Properties.Add("RdbConnection Integrated Security", "SSPI");
             lobSystemInstance.Properties.Add("RdbConnection Pooling", "false");
-            lobSystemInstance.Properties.Add("SsoApplicationId", "SQLServer");
-            lobSystemInstance.Properties.Add("SsoProviderImplementation", "Microsoft.Office.SecureStoreService.Server.SecureStoreProvider, Microsoft.Office.SecureStoreService, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c");
+            lobSystemInstance.Properties.Add("SsoApplicationId", sssId);
+            lobSystemInstance.Properties.Add("SsoProviderImplementation", providerImplementation);
 
             return lobSystemInstance;
         }
@@ -228,7 +218,7 @@ namespace EFEXCON.ExternalLookup.Core
             entity.Identifiers.Create(keyReference.DestinationName, true, keyReference.Type); // e.g. CustomerId // "System.Int32"
 
             var database = "";
-            foreach (Property prop in SqlHelper.getLobSystemInstanceProperties(lobSystem))
+            foreach (Property prop in SqlHelper.GetLobSystemInstanceProperties(lobSystem))
             {
                 if (prop.Name == "RdbConnection Initial Catalog")
                     database = prop.Value.ToString();

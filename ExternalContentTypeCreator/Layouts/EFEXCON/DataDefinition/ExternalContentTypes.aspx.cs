@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using Microsoft.SharePoint.WebControls;
 
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
@@ -38,9 +39,32 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     if (lobSystem == null)
                         throw new NullReferenceException("LobSystem can not be found.");
 
+                    var sssId = "";
+                    var providerimplementation = "";
+
+                    foreach (Property prop in SqlHelper.GetLobSystemInstanceProperties(lobSystem))
+                    {
+                        if (prop.Name == "SsoApplicationId")
+                            sssId = prop.Value.ToString();
+
+                        if (prop.Name == "SsoProviderImplementation")
+                            providerimplementation = prop.Value.ToString();
+                    }
+
+                    if (String.IsNullOrEmpty(sssId))
+                        throw new Exception("Secure Store Application ID can not be identified.");
+
+                    if (String.IsNullOrEmpty(providerimplementation))
+                        throw new Exception("Provider implementation can not be identified.");
+
+                    var credentials = new SecureStoreHelper(sssId, providerimplementation).GetCredentials();
+
+                    if(credentials == null)
+                        throw new NoNullAllowedException("Credentials could not be retrieved from Secure Store Service.");
+
                     if (DataSourceEntity.DataSource == null)
                     {
-                        DataSourceEntity.DataSource = SqlHelper.getTablesForLobSystem(lobSystem);
+                        DataSourceEntity.DataSource = SqlHelper.GetTablesForLobSystem(lobSystem, credentials);
                         DataSourceEntity.DataBind();
                     }
 
@@ -50,7 +74,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                         if (DataSourceStructure.DataSource == null)
                         {
-                            DataSourceStructure.DataSource = SqlHelper.getTableStructure(lobSystem, DataSourceEntity.SelectedItem.Text);
+                            DataSourceStructure.DataSource = SqlHelper.GetTableStructure(lobSystem, credentials, DataSourceEntity.SelectedItem.Text);
                             DataSourceStructure.DataBind();
                         }
                     }
@@ -133,24 +157,25 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     IsKey = !String.IsNullOrEmpty(Request.Form["struct_" + item + "_key"])
                 }).ToList();
 
-            /*
-            foreach(ExternalColumnReference reference in resultList)
-            {
-                Status.InnerHtml += reference.SourceName + " (" + reference.Type + ")";
-
-                if (reference.IsKey)
-                    Status.InnerHtml += " KEY!; ";
-                else
-                    Status.InnerHtml += "; ";
-            }
-            */
-
             string newContentTypeName = NewContentTypeName.Value;
             string tableName = DataSourceEntity.SelectedItem.Text;
             LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
 
-            // start creation of new external content type
-            Creator.CreateNewContentType(newContentTypeName, tableName, resultList, lobSystem);
+            try
+            {
+                Creator.CreateNewContentType(newContentTypeName, tableName, resultList, lobSystem);
+            }
+            catch (Exception ex)
+            {
+                if (ex.ToString().Contains("has an Duplicate value in Field"))
+                {
+                    Status.InnerHtml = 
+                        "<div class='status error'>Could not create external content type. An external content type with " +
+                        "the same name was deleted previously and is still in the cache.</div>";
+                }
+                else
+                    Status.InnerHtml = "<div class='status error'>Could not create external content type.</div>";
+            }
 
             ListExternalContentTypes();
         }

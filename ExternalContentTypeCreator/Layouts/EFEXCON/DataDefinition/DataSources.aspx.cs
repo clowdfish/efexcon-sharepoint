@@ -32,21 +32,27 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             string type = Request.Form["dataType"];
             string server = Request.Form["url"];
             string database = Request.Form["database"];
-            string username = Request.Form["username"];
-            string password = Request.Form["password"];
+            string sssId = Request.Form["secureStoreApplicationId"];
+            const string providerImplementation = 
+                "Microsoft.Office.SecureStoreService.Server.SecureStoreProvider, " +
+                "Microsoft.Office.SecureStoreService, " +
+                "Version=14.0.0.0, Culture=neutral, " +
+                "PublicKeyToken=71e9bce111e9429c";
 
             // the connection string must be conform to
             // Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;
             // check out http://stackoverflow.com/questions/8243008/format-of-the-initialization-string-does-not-conform-to-specification-starting-a
 
+           var credentials = new SecureStoreHelper(sssId, providerImplementation).GetCredentials();
+
             var connectionString = 
                 String.Format("Server={0};Database={1};Integrated Security=SSPI;",
                 server, database);
 
-            if(ConnectionStringIsValid(connectionString))
+            if(ConnectionStringIsValid(credentials, connectionString))
             {
                 var lobSystem = Creator.CreateLobSystem(title, SystemType.Database);
-                var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, username, password);
+                var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, sssId, providerImplementation);
 
                 if(lobSystem != null && lobSystemInstance != null)
                 {                     
@@ -62,13 +68,14 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="credentials"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        protected Boolean ConnectionStringIsValid(string connectionString)
+        protected Boolean ConnectionStringIsValid(Credentials credentials, string connectionString)
         {
             try
             {
-                using (new Impersonator("dev", "CONTOSO", "mark123?"))
+                using (new Impersonator(credentials.User, credentials.Domain, credentials.Password))
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
@@ -79,7 +86,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             catch(Exception e)
             {
-                Status.InnerHtml = "Could not create a connection to the data source: " + e.ToString();
+                Status.InnerHtml = "Could not create a connection to the data source: " + e;
                 return false; 
             }
         }
@@ -115,7 +122,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
             if (counter == 0)
             {
-                DataSourceContainer.InnerHtml = "No LobSystem available.";
+                DataSourceContainer.InnerHtml = "No data source configured.";
             }
         }
 
@@ -135,7 +142,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             else
             {
-                Status.InnerHtml = "LobSystem could not be deleted.";
+                Status.InnerHtml = "Data Source could not be deleted.";
             }
         }
     }

@@ -54,16 +54,12 @@ Data Sources
                 <span class="table-cell">Authentication parameters</span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="UsernameLabel" runat="server" Text="User name"></asp:Label></span>
-                <span class="table-cell"><input type="text" id="username" name="username" /></span>
-            </span>
-            <span class="table-row">
-                <span class="table-cell"><asp:Label ID="PasswordLabel" runat="server" Text="Password"></asp:Label></span>
-                <span class="table-cell"><input type="password" id="password" name="password" /></span>
+                <span class="table-cell"><asp:Label ID="SecureStoreApplicationIdLabel" runat="server" Text="Secure Store Application ID"></asp:Label></span>
+                <span class="table-cell"><input type="text" id="SecureStoreApplicationId" name="secureStoreApplicationId" /></span>
             </span>
         </span>
         <div id="newFormStatus" class="status"></div>
-        <asp:Button OnClick="saveDataSource" OnClientClick="return checkForm()" Text="Save" runat="server" />
+        <asp:Button OnClick="SaveDataSource" OnClientClick="return checkForm()" Text="Save" runat="server" />
         <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
     </div>
     <div id="Status" class="status" runat="server"></div>

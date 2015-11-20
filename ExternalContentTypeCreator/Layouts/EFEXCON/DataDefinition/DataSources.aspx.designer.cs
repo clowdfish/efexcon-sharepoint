@@ -76,22 +76,13 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition {
         protected global::System.Web.UI.WebControls.Label ServerNameLabel;
         
         /// <summary>
-        /// UsernameLabel control.
+        /// SecureStoreApplicationIdLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label UsernameLabel;
-        
-        /// <summary>
-        /// PasswordLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label PasswordLabel;
+        protected global::System.Web.UI.WebControls.Label SecureStoreApplicationIdLabel;
         
         /// <summary>
         /// Status control.
