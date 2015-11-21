@@ -160,6 +160,5 @@ C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\b
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\ru\System.Spatial.resources.dll
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\zh-Hans\System.Spatial.resources.dll
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\zh-Hant\System.Spatial.resources.dll
-C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalLookup.csprojResolveAssemblyReference.cache
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.dll
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.pdb

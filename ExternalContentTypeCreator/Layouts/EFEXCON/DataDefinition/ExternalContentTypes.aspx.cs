@@ -72,6 +72,9 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             if (DataSourceEntity.SelectedItem.Value != (-1).ToString() && !String.IsNullOrEmpty(DataSourceEntity.SelectedItem.Text))
             {
+                // remove select instruction items
+                DataSourceEntity.Items.RemoveAt(0);
+
                 DataSourceStructureTable.Style.Add("display", "block");
 
                 LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);

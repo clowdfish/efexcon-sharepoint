@@ -55,7 +55,7 @@ Data Sources
             </span>
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="SecureStoreApplicationIdLabel" runat="server" Text="Secure Store Application ID"></asp:Label></span>
-                <span class="table-cell"><input type="text" id="SecureStoreApplicationId" name="secureStoreApplicationId" /></span>
+                <span class="table-cell"><input type="text" id="secureStoreApplicationId" name="secureStoreApplicationId" /></span>
             </span>
         </span>
         <div id="newFormStatus" class="status"></div>

@@ -51,7 +51,7 @@ External Content Types
             <span class="table-row">
                 <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="Table"></asp:Label></span>
                 <span class="table-cell">
-                    <asp:DropDownList ID="DataSourceEntity" OnSelectedIndexChanged="DataSourceEntity_SelectedIndexChanged" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
+                    <asp:DropDownList ID="DataSourceEntity" OnSelectedIndexChanged="DataSourceEntity_SelectedIndexChanged" AppendDataBoundItems="true" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
                 </span>
             </span>
         </span>

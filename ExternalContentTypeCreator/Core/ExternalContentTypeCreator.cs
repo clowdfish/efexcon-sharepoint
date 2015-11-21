@@ -441,7 +441,52 @@ namespace EFEXCON.ExternalLookup.Core
             {
                 if (entity.Name == name)
                 {
+                    LobSystem lobSystemReference = entity.LobSystem;
+                    LobSystemInstance instanceReference = lobSystemReference.LobSystemInstances.First();
+
+                    var lobSystemName = "";
+                    var lobSystemType = SystemType.Custom;
+
+                    var instanceName = "";
+                    var instanceIsCached = true;
+                    var instanceProperties = new Dictionary<string, string>();
+
+                    if (lobSystemReference != null && instanceReference != null)
+                    {
+                        lobSystemName = lobSystemReference.Name;
+                        lobSystemType = lobSystemReference.SystemType;
+
+                        instanceName = instanceReference.Name;
+                        instanceIsCached = instanceReference.IsCached;                       
+
+                        foreach (var prop in instanceReference.Properties)
+                        {
+                            instanceProperties.Add(prop.Name, prop.Value.ToString());
+                        }
+                    }
+
                     entity.Delete();
+
+                    // check if LobSytem must be recreated
+                    if (!string.IsNullOrEmpty(lobSystemName) && !string.IsNullOrEmpty(instanceName))
+                    {
+                        LobSystemCollection availableLobSystems = service.GetAdministrationMetadataCatalog(context).GetLobSystems("*");
+
+                        var lobSystemStillThere = availableLobSystems.Where(x => x.Name == lobSystemName).Any();
+
+                        if(!lobSystemStillThere)
+                        {
+                            // re-create LobSystem
+                            var newLobSystem = availableLobSystems.Create(lobSystemName, true, lobSystemType);
+                            var newInstance = newLobSystem.LobSystemInstances.Create(instanceName, instanceIsCached);
+
+                            foreach(var item in instanceProperties)
+                            {
+                                newInstance.Properties.Add(item.Key, item.Value);
+                            }
+                        }
+                    }
+
                     return true;
                 }
             }
@@ -450,4 +495,3 @@ namespace EFEXCON.ExternalLookup.Core
         }
     }
  }
-  
