@@ -46,7 +46,7 @@ namespace EFEXCON.ExternalLookup.Helper
                 throw new Exception("Secure Store Application ID can not be identified.");
 
             if (String.IsNullOrEmpty(providerimplementation))
-                throw new Exception("Provider implementation can not be identified.");
+                throw new Exception("Provider implementation for Secure Store Service can not be identified.");
 
             var credentials = new SecureStoreHelper(sssId, providerimplementation).GetCredentials();
 

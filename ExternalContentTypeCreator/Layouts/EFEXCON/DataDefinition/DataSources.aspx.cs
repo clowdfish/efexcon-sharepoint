@@ -50,7 +50,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             catch(Exception ex)
             {
-                Status.InnerHtml = "<div class='status error'>Could not create access credentials: "+ ex + "</div>";
+                Status.InnerHtml = HtmlHelper.CreateErrorString("Could not get credentials from Secure Store Service.", ex);
             }
 
             var connectionString = 
@@ -59,16 +59,24 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
             if(credentials != null && ConnectionStringIsValid(credentials, connectionString))
             {
-                var lobSystem = Creator.CreateLobSystem(title, SystemType.Database);
-                var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, sssId, providerImplementation);
-
-                if(lobSystem != null && lobSystemInstance != null)
-                {                     
-                    ListLobSystems();
-                }
-                else
+                try
                 {
-                    Status.InnerHtml = "Could not create data source.";
+                    var lobSystem = Creator.CreateLobSystem(title, SystemType.Database);
+                    var lobSystemInstance = Creator.CreateLobSystemInstance(lobSystem, server, database, sssId, providerImplementation);
+
+                    if (lobSystem != null && lobSystemInstance != null)
+                    {
+                        Status.InnerHtml = "";
+                        ListLobSystems();
+                    }
+                    else
+                    {
+                        Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create data source.</div>", null);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Status.InnerHtml = HtmlHelper.CreateErrorString("The data source could not be created. Do you have the right permissions?", ex);
                 }
             }
         }
@@ -92,9 +100,9 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     }
                 }
             }
-            catch(Exception e)
+            catch(Exception ex)
             {
-                Status.InnerHtml = "Could not create a connection to the data source: " + e;
+                Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create a connection to the data source." , ex);
                 return false; 
             }
         }
@@ -106,32 +114,40 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             DataSourceContainer.InnerHtml = "";
 
-            int counter = 0;
-            foreach (var lobSystem in Creator.ListAllLobSystems())
+            try
             {
-                var separator = new LiteralControl("<div></div>");
-
-                var label = new Label();
-                label.Text = lobSystem.Name + " ";
-                DataSourceContainer.Controls.Add(label);
-
-                var link = new LinkButton
+                int counter = 0;
+                foreach (var lobSystem in Creator.ListAllLobSystems())
                 {
-                    ID = "delete_" + lobSystem.Name,
-                    CommandArgument = lobSystem.Name,
-                    Text = "delete"
-                };
-                link.Command += DeleteLobSystem;
-                DataSourceContainer.Controls.Add(link);
+                    var separator = new LiteralControl("<div></div>");
 
-                DataSourceContainer.Controls.Add(separator);
-                counter++;
+                    var label = new Label();
+                    label.Text = lobSystem.Name + " ";
+                    DataSourceContainer.Controls.Add(label);
+
+                    var link = new LinkButton
+                    {
+                        ID = "delete_" + lobSystem.Name,
+                        CommandArgument = lobSystem.Name,
+                        Text = "delete"
+                    };
+                    link.Command += DeleteLobSystem;
+                    DataSourceContainer.Controls.Add(link);
+
+                    DataSourceContainer.Controls.Add(separator);
+                    counter++;
+                }
+
+                if (counter == 0)
+                {
+                    DataSourceContainer.InnerHtml = "No data source configured.";
+                }
             }
-
-            if (counter == 0)
+            catch(Exception ex)
             {
-                DataSourceContainer.InnerHtml = "No data source configured.";
+                Status.InnerHtml = HtmlHelper.CreateErrorString("Could not access Business Data Connectivity service to list data sources.", ex);
             }
+           
         }
 
         /// <summary>
@@ -142,16 +158,25 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         protected void DeleteLobSystem(object sender, CommandEventArgs e)
         {
             string lobName = e.CommandArgument.ToString();
-            var deleted = Creator.DeleteLobSystem(lobName, SystemType.Database);
 
-            if(deleted)
-            {                
-                ListLobSystems();
-            }
-            else
+            try
             {
-                Status.InnerHtml = "Data Source could not be deleted.";
+                var deleted = Creator.DeleteLobSystem(lobName, SystemType.Database);
+
+                if (deleted)
+                {
+                    ListLobSystems();
+                }
+                else
+                {
+                    Status.InnerHtml = HtmlHelper.CreateErrorString("Data source could not be deleted.", null);
+                }
             }
+            catch(Exception ex)
+            {
+                Status.InnerHtml = HtmlHelper.CreateErrorString("Data source could not be deleted.", ex);
+            }
+            
         }
     }
 }

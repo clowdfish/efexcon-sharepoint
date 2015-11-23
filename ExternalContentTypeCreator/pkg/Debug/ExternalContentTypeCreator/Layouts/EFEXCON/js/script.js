@@ -77,3 +77,10 @@ function validStructure() {
 
     return true;
 }
+ 
+$(document).ready(function () {    
+    $(".status-show-details").click(function () {
+        $(this).hide();
+        $(".status-details").fadeIn();
+    });
+});

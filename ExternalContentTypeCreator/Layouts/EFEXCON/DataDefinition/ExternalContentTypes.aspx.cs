@@ -24,8 +24,15 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 NewForm.Style.Add("display", "none");
                 DataSourceStructureTable.Style.Add("display", "none");
 
-                LobSystems.DataSource = Creator.ListAllLobSystems().Select(x => x.Name);
-                LobSystems.DataBind();
+                try
+                {
+                    LobSystems.DataSource = Creator.ListAllLobSystems().Select(x => x.Name);
+                    LobSystems.DataBind();
+                }
+                catch(Exception ex)
+                {
+                    HtmlHelper.CreateErrorString("Could not access Business Data Connectivity service. Do you have the right permissions?", ex);
+                }
             }
             else
             {
@@ -44,18 +51,28 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
 
                 if (lobSystem == null)
-                    throw new NullReferenceException("LobSystem can not be found.");
-
-                var credentials = SecureStoreHelper.GetCredentialsFromLobSystem(lobSystem);
-
-                DataSourceEntity.Items.Add(new ListItem
                 {
-                    Text = "-- SELECT --",
-                    Value = "-1"
-                });
+                    HtmlHelper.CreateErrorString("Selected data source cannot be accessed.", null);
+                    return;
+                }
 
-                DataSourceEntity.DataSource = SqlHelper.GetTablesForLobSystem(lobSystem, credentials);
-                DataSourceEntity.DataBind();
+                try
+                {
+                    var credentials = SecureStoreHelper.GetCredentialsFromLobSystem(lobSystem);               
+
+                    DataSourceEntity.Items.Add(new ListItem
+                    {
+                        Text = "-- SELECT --",
+                        Value = "-1"
+                    });
+               
+                    DataSourceEntity.DataSource = SqlHelper.GetTablesForLobSystem(lobSystem, credentials);
+                    DataSourceEntity.DataBind();
+                }
+                catch(Exception ex)
+                {
+                    HtmlHelper.CreateErrorString("The data structure could not be loaded. Is the data source still valid and accessible?", ex);
+                }
             }
             else
             {
@@ -73,19 +90,29 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             if (DataSourceEntity.SelectedItem.Value != (-1).ToString() && !String.IsNullOrEmpty(DataSourceEntity.SelectedItem.Text))
             {
                 // remove select instruction items
-                DataSourceEntity.Items.RemoveAt(0);
-
-                DataSourceStructureTable.Style.Add("display", "block");
+                DataSourceEntity.Items.RemoveAt(0);           
 
                 LobSystem lobSystem = Creator.GetLobSystem(LobSystems.SelectedItem.Text);
 
                 if (lobSystem == null)
-                    throw new NullReferenceException("LobSystem can not be found.");
+                {
+                    HtmlHelper.CreateErrorString("Selected data source cannot be accessed.", null);
+                    return;
+                }
 
-                var credentials = SecureStoreHelper.GetCredentialsFromLobSystem(lobSystem);
+                try
+                {
+                    var credentials = SecureStoreHelper.GetCredentialsFromLobSystem(lobSystem);
 
-                DataSourceStructure.DataSource = SqlHelper.GetTableStructure(lobSystem, credentials, DataSourceEntity.SelectedItem.Text);
-                DataSourceStructure.DataBind();
+                    DataSourceStructure.DataSource = SqlHelper.GetTableStructure(lobSystem, credentials, DataSourceEntity.SelectedItem.Text);
+                    DataSourceStructure.DataBind();
+
+                    DataSourceStructureTable.Style.Add("display", "block");
+                }
+                catch (Exception ex)
+                {
+                    HtmlHelper.CreateErrorString("The data structure could not be loaded. Is the data source still valid and accessible?", ex);
+                }               
             }      
             else
             {
@@ -101,30 +128,38 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
         {
             ExternalContentTypesContainer.InnerHtml = "";
 
-            int counter = 0;
-            foreach (Entity contentType in Creator.ListAllExternalContentTypes())
+            try
             {
-                var separator = new LiteralControl("<div></div>");
-
-                var label = new Label { Text = contentType.Name + " " };
-                ExternalContentTypesContainer.Controls.Add(label);
-
-                var link = new LinkButton
+                int counter = 0;
+                foreach (Entity contentType in Creator.ListAllExternalContentTypes())
                 {
-                    ID = "delete_" + contentType.Name,
-                    CommandArgument = contentType.Name,
-                    Text = "delete"
-                };
-                link.Command += DeleteContentType;
-                ExternalContentTypesContainer.Controls.Add(link);
+                    var separator = new LiteralControl("<div></div>");
 
-                ExternalContentTypesContainer.Controls.Add(separator);
-                counter++;
+                    var label = new Label { Text = contentType.Name + " " };
+                    ExternalContentTypesContainer.Controls.Add(label);
+
+                    var link = new LinkButton
+                    {
+                        ID = "delete_" + contentType.Name,
+                        CommandArgument = contentType.Name,
+                        Text = "delete"
+                    };
+                    link.Command += DeleteContentType;
+                    ExternalContentTypesContainer.Controls.Add(link);
+
+                    ExternalContentTypesContainer.Controls.Add(separator);
+                    counter++;
+                }
+
+                if (counter == 0)
+                {
+                    ExternalContentTypesContainer.InnerHtml = "No external content type available.";
+                }
             }
-
-            if(counter == 0)
+            catch(Exception ex)
             {
-                ExternalContentTypesContainer.InnerHtml = "No external content type available.";
+                Status.InnerHtml = HtmlHelper.CreateErrorString("The content type could not be retrieved. Do you have the right permissions?", ex);
+
             }
         }
 
@@ -181,15 +216,15 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             {
                 if (ex.ToString().Contains("has an Duplicate value in Field"))
                 {
-                    Status.InnerHtml = 
-                        "<div class='status error'>Could not create external content type. An external content type with " +
-                        "the same name was deleted previously and is still in the cache.</div>";
+                    Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create external content type. An external content type with " +
+                        "the same name is still in the cache." , ex);
                 }
                 else
-                    Status.InnerHtml = "<div class='status error'>Could not create external content type.</div>";
+                    Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create external content type.", ex);
             }
 
             ListExternalContentTypes();
+            ClearForm();
         }
 
         /// <summary>
@@ -213,6 +248,27 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             {
                 Status.InnerHtml = "External Content type could not be deleted.";
             }
+        }
+
+        protected void ClearForm()
+        {
+            NewContentTypeName.Value = "";
+
+            LobSystems.Items.Clear();
+            LobSystems.Items.Add(new ListItem
+            {
+                Text = "-- SELECT --",
+                Value = "-1"
+            });
+            LobSystems.DataSource = Creator.ListAllLobSystems().Select(x => x.Name);
+            LobSystems.DataBind();
+
+            DataSourceEntity.DataSource = null;
+            DataSourceEntity.DataBind();
+            DataSourceEntity.Items.Clear();
+
+            DataSourceStructure.DataSource = null;
+            DataSourceStructure.DataBind();
         }
     } // end of class
 }
