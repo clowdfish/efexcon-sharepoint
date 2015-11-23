@@ -3,16 +3,16 @@
   <CustomActionGroup
      Id="EfexconConfigurationGroup"
      Location="Microsoft.SharePoint.SiteSettings"
-     Title="EFEXCON Configuration"
-     Description="Configuration section for EFEXCON solution items"
+     Title="$Resources:CustomAction_Title"
+     Description="$Resources:CustomAction_Description"
      ImageUrl="/_layouts/Images/STSICON.GIF" />
 
   <CustomAction
     Id="DataSourceConfig"
     GroupId="EfexconConfigurationGroup"
     Location="Microsoft.SharePoint.SiteSettings"
-    Description="Configuration of external data sources"
-    Title="External data sources"
+    Description="$Resources:DataSource_Description"
+    Title="$Resources:DataSource_Title"
     Rights="ManageWeb"
     ImageUrl="/_layouts/Images/STSICON.GIF">
     <UrlAction Url="~site/_layouts/EFEXCON/DataDefinition/DataSources.aspx"/>
@@ -22,8 +22,8 @@
     Id="ExternalContentTypeConfig"
     GroupId="EfexconConfigurationGroup"
     Location="Microsoft.SharePoint.SiteSettings"
-    Description="Configuration of external content types"
-    Title="External content types"
+    Description="$Resources:ContentType_Description"
+    Title="$Resources:ContentType_Title"
     Rights="ManageWeb"
     ImageUrl="/_layouts/Images/STSICON.GIF">
     <UrlAction Url="~site/_layouts/EFEXCON/DataDefinition/ExternalContentTypes.aspx"/>

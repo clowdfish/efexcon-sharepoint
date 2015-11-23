@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Id="8def28fe-eee4-46f6-817a-407c948e2b49" Scope="Web" Title="ExternalContentTypeCreator Feature1">
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" Title="ExternalContentTypeCreator CustomActions" Id="8def28fe-eee4-46f6-817a-407c948e2b49" Scope="Web">
   <ElementManifests>
     <ElementManifest Location="SiteSettingsCustomAction\Elements.xml" />
+    <ElementManifest Location="App_GlobalResources\Elements.xml" />
+    <ElementFile Location="Resources\Resources.resx" />
+    <ElementFile Location="Resources\Resources.de-DE.resx" />
   </ElementManifests>
 </Feature>

@@ -12,55 +12,55 @@
 </asp:Content>
 
 <asp:Content ID="PageTitle" ContentPlaceHolderID="PlaceHolderPageTitle" runat="server">
-EFEXCON Configuration
+<asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Configuration_Title%>" />
 </asp:Content>
 
 <asp:Content ID="PageTitleInTitleArea" ContentPlaceHolderID="PlaceHolderPageTitleInTitleArea" runat="server" >
-Data Sources
+<asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Title%>" />
 </asp:Content>
 
 <asp:Content ID="Main" ContentPlaceHolderID="PlaceHolderMain" runat="server">
-    <h2>Available data sources</h2>
+    <h2><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_List_Title%>" /></h2>
     <div id="DataSourceContainer" class="container" runat="server"></div>
-    <asp:Button OnClientClick="showNewForm(); return false;" Text="Add data source" ClientIDMode="Static" ID="ShowNewFormButton" runat="server" />
+    <asp:Button OnClientClick="showNewForm(); return false;" Text="<%$Resources:Resources,ExternalLookup_DataSource_Add%>" ClientIDMode="Static" ID="ShowNewFormButton" runat="server" />
 
     <div id="NewForm" class="container new-form data-source-form" runat="server">
-        <h2>New data source</h2>
+        <h2><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_New_Title%>" /></h2>
         <span class="table">
             <span class="table-row heading">
-                <span class="table-cell">Data source attributes</span>
+                <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Attributes%>" /></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="TitleLabel" runat="server" Text="Name"></asp:Label></span>
-                <span class="table-cell"><input type="text" name="title" id="title" placeholder="Choose a name for the new data source"/></span>
+                <span class="table-cell"><asp:Label ID="TitleLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Name%>"></asp:Label></span>
+                <span class="table-cell"><input type="text" name="title" id="title" placeholder="<asp:Literal runat='server' Text='<%$Resources:Resources,ExternalLookup_DataSource_Name_Placeholder%>' />"/></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="DataTypeLabel" runat="server" Text="Type"></asp:Label></span>
+                <span class="table-cell"><asp:Label ID="DataTypeLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Type%>"></asp:Label></span>
                 <span class="table-cell">
                     <select id="dataType" name="dataType">
-                        <option value="Database">SQL Database</option>
+                        <option value="Database"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Type_SQL%>" /></option>
                     </select>
                 </span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="DatabaseLabel" runat="server" Text="Database"></asp:Label></span>
-                <span class="table-cell"><input type="text" name="database" id="database" placeholder="The database name" /></span>
+                <span class="table-cell"><asp:Label ID="DatabaseLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Database%>"></asp:Label></span>
+                <span class="table-cell"><input type="text" name="database" id="database" placeholder="<asp:Literal runat='server' Text='<%$Resources:Resources,ExternalLookup_DataSource_DatabaseName%>' />" /></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="ServerNameLabel" runat="server" Text="Server name"></asp:Label></span>
-                <span class="table-cell"><input type="text" id="url" name="url" placeholder="YOUR_SERVER\INSTANCE" /></span>
+                <span class="table-cell"><asp:Label ID="ServerNameLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_ServerName%>"></asp:Label></span>
+                <span class="table-cell"><input type="text" id="url" name="url" placeholder="<asp:Literal runat='server' Text='<%$Resources:Resources,ExternalLookup_DataSource_ServerName_Placeholder%>' />" /></span>
             </span>
             <span class="table-row heading">
-                <span class="table-cell">Authentication parameters</span>
+                <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Authentication_Title%>" /></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="SecureStoreApplicationIdLabel" runat="server" Text="Secure Store Application ID"></asp:Label></span>
+                <span class="table-cell"><asp:Label ID="SecureStoreApplicationIdLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_SecureStoreServiceId%>"></asp:Label></span>
                 <span class="table-cell"><input type="text" id="secureStoreApplicationId" name="secureStoreApplicationId" /></span>
             </span>
         </span>
         <div id="newFormStatus" class="status"></div>
-        <asp:Button OnClick="SaveDataSource" OnClientClick="return checkForm()" Text="Save" runat="server" />
-        <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
+        <asp:Button OnClick="SaveDataSource" OnClientClick="return checkForm()" Text="<%$Resources:Resources,ExternalLookup_General_Save%>" runat="server" />
+        <asp:Button OnClientClick="hideNewForm(); return false;" Text="<%$Resources:Resources,ExternalLookup_General_Cancel%>" runat="server" />
     </div>
     <div id="Status" class="status" runat="server"></div>
 

@@ -1,8 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Solution xmlns="http://schemas.microsoft.com/sharepoint/" SolutionId="f064f124-2a30-4d1c-a635-035c4237cf70" SharePointProductVersion="15.0">
+  <ApplicationResourceFiles>
+    <App_GlobalResourceFile Location="Resources.resx" />
+    <App_GlobalResourceFile Location="Resources.de-DE.resx" />
+  </ApplicationResourceFiles>
   <Assemblies>
     <Assembly Location="ExternalContentTypeCreator.dll" DeploymentTarget="GlobalAssemblyCache" />
   </Assemblies>
+  <RootFiles>
+    <RootFile Location="Resources\Resources.resx" />
+    <RootFile Location="Resources\Resources.de-DE.resx" />
+  </RootFiles>
   <TemplateFiles>
     <TemplateFile Location="Layouts\EFEXCON\css\style.scss" />
     <TemplateFile Location="Layouts\web.config" />

@@ -13,38 +13,38 @@
 </asp:Content>
 
 <asp:Content ID="PageTitle" ContentPlaceHolderID="PlaceHolderPageTitle" runat="server">
-EFEXCON Configuration
+<asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_DataSource_Configuration_Title%>" />
 </asp:Content>
 
 <asp:Content ID="PageTitleInTitleArea" ContentPlaceHolderID="PlaceHolderPageTitleInTitleArea" runat="server" >
-External Content Types
+<asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_Title%>" />
 </asp:Content>
 
 <asp:Content ID="Main" ContentPlaceHolderID="PlaceHolderMain" runat="server">
-    <h2>Available external content types</h2>
+    <h2><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_List_Title%>" /></h2>
     <div id="ExternalContentTypesContainer" class="container" runat="server"></div>
-    <asp:Button OnClientClick="showNewForm(); return false;" Text="Add external content type" ClientIDMode="Static" ID="ShowNewFormButton" runat="server" />
+    <asp:Button OnClientClick="showNewForm(); return false;" Text="<%$Resources:Resources,ExternalLookup_ContentType_Add%>" ClientIDMode="Static" ID="ShowNewFormButton" runat="server" />
 
     <div id="NewForm" class="container new-form" runat="server">
-        <h2>New external content type</h2>
+        <h2><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_New_Title%>" /></h2>
         <span class="table">
             <span class="table-row heading">
-                <span class="table-cell">Name</span>
+                <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_Name%>" /></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="NameLabel" runat="server" Text="Name"></asp:Label></span>
+                <span class="table-cell"><asp:Label ID="NameLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_Name%>"></asp:Label></span>
                 <span class="table-cell">
-                    <input type="text" id="NewContentTypeName" name="name" placeholder="Name for new ECT" runat="server" />
+                    <input type="text" id="NewContentTypeName" name="name" runat="server" />
                 </span>
             </span>
             <span class="table-row heading">
-                <span class="table-cell">Data source selection</span>
+                <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_Selection%>" /></span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="DataSourceLabel" runat="server" Text="Type"></asp:Label></span>
+                <span class="table-cell"><asp:Label ID="DataSourceLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_Type%>"></asp:Label></span>
                 <span class="table-cell">
                     <asp:DropDownList ID="LobSystems" OnSelectedIndexChanged="LobSystems_SelectedIndexChanged" AppendDataBoundItems="true" AutoPostBack="true" runat="server" Width="100%">
-                        <asp:ListItem Value="-1">-- SELECT --</asp:ListItem>
+                        <asp:ListItem Value="-1" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_Select%>"></asp:ListItem>
                     </asp:DropDownList>
                 </span>
             </span>
@@ -60,10 +60,10 @@ External Content Types
             <asp:Repeater ID="DataSourceStructure" runat="server">
                 <HeaderTemplate>
                     <span class="table-row">
-                        <span class="table-cell">Column name</span>
-                        <span class="table-cell">Include in ECT</span>
-                        <span class="table-cell">Is key?</span>
-                        <span class="table-cell">Field name in ECT</span>
+                        <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_ColumnName%>" /></span>
+                        <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_Include%>" /></span>
+                        <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_IsKey%>" /></span>
+                        <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_FieldName%>" /></span>
                     </span>
                 </HeaderTemplate>
                 <ItemTemplate>
@@ -85,8 +85,8 @@ External Content Types
         </span>
 
         <div id="newFormStatus" class="status"></div>
-        <asp:Button OnClick="SaveExternalContentType" OnClientClick="return checkForm() && validStructure()" Text="Save" runat="server" />
-        <asp:Button OnClientClick="hideNewForm(); return false;" Text="Cancel" runat="server" />
+        <asp:Button OnClick="SaveExternalContentType" OnClientClick="return checkForm() && validStructure()" Text="<%$Resources:Resources,ExternalLookup_General_Save%>" runat="server" />
+        <asp:Button OnClientClick="hideNewForm(); return false;" Text="<%$Resources:Resources,ExternalLookup_General_Cancel%>" runat="server" />
     </div>
     <div id="Status" class="status" runat="server"></div>
 

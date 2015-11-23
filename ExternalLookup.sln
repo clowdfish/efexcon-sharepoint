@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{25865001-065B-4B54-9B0D-F490589DBAB5}"
 	ProjectSection(SolutionItems) = preProject
 		TODO.txt = TODO.txt
-		WebEssentials2015-Settings.json = WebEssentials2015-Settings.json
 	EndProjectSection
 EndProject
 Global

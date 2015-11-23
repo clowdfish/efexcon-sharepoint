@@ -10,13 +10,20 @@ using EFEXCON.ExternalLookup.Helper;
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 {
     using Core;
+    using Microsoft.SharePoint;
+    using Microsoft.SharePoint.Utilities;
 
     public partial class DataSources : LayoutsPageBase
     {
+        protected uint _language = 1033;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             ShowNewFormButton.Style.Add("display", "block");
             NewForm.Style.Add("display", "none");
+
+            if (SPContext.Current.Web != null)
+                _language =  SPContext.Current.Web.Language;
 
             ListLobSystems();
         }
@@ -71,7 +78,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     }
                     else
                     {
-                        Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create data source.</div>", null);
+                        Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create data source.", null);
                     }
                 }
                 catch(Exception ex)
@@ -129,7 +136,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     {
                         ID = "delete_" + lobSystem.Name,
                         CommandArgument = lobSystem.Name,
-                        Text = "delete"
+                        Text = SPUtility.GetLocalizedString("$Resources:ExternalLookup_General_Delete", "Resources", _language)
                     };
                     link.Command += DeleteLobSystem;
                     DataSourceContainer.Controls.Add(link);
