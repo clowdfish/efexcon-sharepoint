@@ -124,6 +124,15 @@ namespace ExternalContentTypeCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Table.
+        /// </summary>
+        internal static string ExternalLookup_ContentType_DataSource_Table {
+            get {
+                return ResourceManager.GetString("ExternalLookup_ContentType_DataSource_Table", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Available external content types.
         /// </summary>
         internal static string ExternalLookup_ContentType_List_Title {
@@ -165,6 +174,15 @@ namespace ExternalContentTypeCreator.Resources {
         internal static string ExternalLookup_ContentType_Type {
             get {
                 return ResourceManager.GetString("ExternalLookup_ContentType_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key column is not set..
+        /// </summary>
+        internal static string ExternalLookup_Creator_KeyColumn {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Creator_KeyColumn", resourceCulture);
             }
         }
         
@@ -340,11 +358,218 @@ namespace ExternalContentTypeCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Credentials could not be retrieved from Secure Store Service..
+        /// </summary>
+        internal static string ExternalLookup_Helper_Credentials {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_Credentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database string is not defined..
+        /// </summary>
+        internal static string ExternalLookup_Helper_Database {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_Database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login name does not include domain information..
+        /// </summary>
+        internal static string ExternalLookup_Helper_DomainMissing {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_DomainMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No LobSystemInstance available for LobSystem..
+        /// </summary>
+        internal static string ExternalLookup_Helper_LobSystem {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_LobSystem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider implementation for Secure Store Service can not be identified..
+        /// </summary>
+        internal static string ExternalLookup_Helper_Provider {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provider type of secure store provider cannot be identified..
+        /// </summary>
+        internal static string ExternalLookup_Helper_ProviderType {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_ProviderType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secure Store Application ID can not be identified..
+        /// </summary>
+        internal static string ExternalLookup_Helper_SecureStore {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_SecureStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server string is not defined..
+        /// </summary>
+        internal static string ExternalLookup_Helper_Server {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Helper_Server", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Details.
         /// </summary>
         internal static string ExternalLookup_Link_Details {
             get {
                 return ResourceManager.GetString("ExternalLookup_Link_Details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not create external content type..
+        /// </summary>
+        internal static string ExternalLookup_Status_ContentType_Create {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_ContentType_Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External Content type could not be deleted..
+        /// </summary>
+        internal static string ExternalLookup_Status_ContentType_Delete {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_ContentType_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not create external content type. An external content type with the same name is still in the cache..
+        /// </summary>
+        internal static string ExternalLookup_Status_ContentType_Duplicate {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_ContentType_Duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No external content type available..
+        /// </summary>
+        internal static string ExternalLookup_Status_ContentType_None {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_ContentType_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The content type could not be retrieved. Do you have the right permissions?.
+        /// </summary>
+        internal static string ExternalLookup_Status_ContentType_Permissions {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_ContentType_Permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not access Business Data Connectivity service. Do you have the right permissions?.
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Access {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Access", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not create a connection to the data source..
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Connection {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not create data source..
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Create {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data source could not be deleted..
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Delete {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not access Business Data Connectivity service to list data sources..
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Listing {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Listing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No data source available..
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_None {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The data source could not be created. Do you have the right permissions?.
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Permissions {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Permissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The data structure could not be loaded. Is the data source still valid and accessible?.
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Structure {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Structure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected data source is not available..
+        /// </summary>
+        internal static string ExternalLookup_Status_DataSource_Unavailable {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_DataSource_Unavailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not get credentials from Secure Store Service..
+        /// </summary>
+        internal static string ExternalLookup_Status_SecureStore_Credentials {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Status_SecureStore_Credentials", resourceCulture);
             }
         }
     }

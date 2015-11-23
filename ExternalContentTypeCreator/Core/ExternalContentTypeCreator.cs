@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using EFEXCON.ExternalLookup.Helper;
 using System.Linq;
+using Microsoft.SharePoint.Utilities;
 
 namespace EFEXCON.ExternalLookup.Core
 {
@@ -180,6 +181,8 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="lobSystem"></param>
         public static void CreateNewContentType(string name, string table, List<ExternalColumnReference> referenceList, LobSystem lobSystem)
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
+
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
 
@@ -201,7 +204,8 @@ namespace EFEXCON.ExternalLookup.Core
             }
             else
             {
-                throw new LobGenericException("No LobSystemInstance available in LobSystem.");
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_LobSystem", "Resources", language);
+                throw new LobGenericException(message);
             }
                         
             // Create a new Entity 
@@ -318,6 +322,8 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="entity"></param>
         private static void CreateReadItemMethod(string name, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
+
             string itemMethodName = "Get" + name;
             string itemMethodEntity = name;
             string listMethodEntity = name + "s";
@@ -351,7 +357,10 @@ namespace EFEXCON.ExternalLookup.Core
 
             // Create the EntityID input parameter 
             if (keyColumn == null)
-                throw new NullReferenceException("keyColumn is not set.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Creator_KeyColumn", "Resources", language);
+                throw new NullReferenceException(message);
+            }
 
             string idParameter = "@" + keyColumn.DestinationName;
             Parameter entityIdParameter = getItemMethod.Parameters.Create(idParameter, true, DirectionType.In);

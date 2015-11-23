@@ -127,7 +127,7 @@
     <value>Neuer Feldname</value>
   </data>
   <data name="ExternalLookup_ContentType_DataSource_Include" xml:space="preserve">
-    <value>Übernehmen</value>
+    <value>Verwenden</value>
   </data>
   <data name="ExternalLookup_ContentType_DataSource_IsKey" xml:space="preserve">
     <value>Ist Schlüssel?</value>
@@ -138,11 +138,17 @@
   <data name="ExternalLookup_ContentType_DataSource_Selection" xml:space="preserve">
     <value>Auswahl der Datenquelle</value>
   </data>
+  <data name="ExternalLookup_ContentType_DataSource_Table" xml:space="preserve">
+    <value>Tabelle</value>
+  </data>
+  <data name="ExternalLookup_ContentType_DataSource_Table1" xml:space="preserve">
+    <value>Tabelle</value>
+  </data>
   <data name="ExternalLookup_ContentType_List_Title" xml:space="preserve">
     <value>Verfügbare externe Inhaltstypen</value>
   </data>
   <data name="ExternalLookup_ContentType_Name" xml:space="preserve">
-    <value>Name für neuen externen Inhaltstyp</value>
+    <value>Name für neuen Inhaltstyp</value>
   </data>
   <data name="ExternalLookup_ContentType_New_Title" xml:space="preserve">
     <value>Neuer externer Inhaltstyp</value>
@@ -152,6 +158,9 @@
   </data>
   <data name="ExternalLookup_ContentType_Type" xml:space="preserve">
     <value>Typ</value>
+  </data>
+  <data name="ExternalLookup_Creator_KeyColumn" xml:space="preserve">
+    <value>Schlüsselspalte fehlt.</value>
   </data>
   <data name="ExternalLookup_DataSource_Add" xml:space="preserve">
     <value>Datenquelle hinzufügen</value>
@@ -210,7 +219,76 @@
   <data name="ExternalLookup_General_Save" xml:space="preserve">
     <value>Speichern</value>
   </data>
+  <data name="ExternalLookup_Helper_Credentials" xml:space="preserve">
+    <value>Anmeldedaten konnten nicht vom Secure Store empfangen werden.</value>
+  </data>
+  <data name="ExternalLookup_Helper_Database" xml:space="preserve">
+    <value>Datenbank ist nicht definiert.</value>
+  </data>
+  <data name="ExternalLookup_Helper_DomainMissing" xml:space="preserve">
+    <value>Der Anmeldenamen muss die Domaine enthalten.</value>
+  </data>
+  <data name="ExternalLookup_Helper_LobSystem" xml:space="preserve">
+    <value>Kein LobSystem Instanz verfügbar.</value>
+  </data>
+  <data name="ExternalLookup_Helper_Provider" xml:space="preserve">
+    <value>Provider Implementierung des Secure Store nicht verfügbar.</value>
+  </data>
+  <data name="ExternalLookup_Helper_ProviderType" xml:space="preserve">
+    <value>Provider Typ des Secure Store kann nicht festgestellt werden.</value>
+  </data>
+  <data name="ExternalLookup_Helper_SecureStore" xml:space="preserve">
+    <value>Secure Store Anwendungs ID nicht verfügbar.</value>
+  </data>
+  <data name="ExternalLookup_Helper_Server" xml:space="preserve">
+    <value>Servername ist nicht definiert.</value>
+  </data>
   <data name="ExternalLookup_Link_Details" xml:space="preserve">
     <value>Details anzeigen</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Create" xml:space="preserve">
+    <value>Externer Inhaltstyp konnte nicht erstellt werden.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Delete" xml:space="preserve">
+    <value>Externer Inhaltstyp konnte nicht gelöscht werden.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Duplicate" xml:space="preserve">
+    <value>Externer Inhaltstyp konnte nicht erstellt werden. Ein Inhaltstyp mit dem selben Namen befindet sich noch im Cache.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_None" xml:space="preserve">
+    <value>Kein externer Inhaltstyp verfügbar.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Permissions" xml:space="preserve">
+    <value>Inhaltstyp konnte nicht abgerufen werden. Verfügen Sie über genügend Rechte?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Access" xml:space="preserve">
+    <value>Zugriff auf Business Data Connectivity Service nicht möglich.  Verfügen Sie über genügend Rechte?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Connection" xml:space="preserve">
+    <value>Verbindung zu Datenquelle konnte nicht hergestellt werden,</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Create" xml:space="preserve">
+    <value>Datenquelle konnte nicht erstellt werden.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Delete" xml:space="preserve">
+    <value>Datenquelle konnte nicht gelöscht werden.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Listing" xml:space="preserve">
+    <value>Zugriff auf Business Data Connectivity Service nicht möglich. </value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_None" xml:space="preserve">
+    <value>Keine Datenquelle verfügbar.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Permissions" xml:space="preserve">
+    <value>Datenquelle konnte nicht erstellt werden. Verfügen Sie über genügend Rechte?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Structure" xml:space="preserve">
+    <value>Die Datenstruktur konnte nicht geladen werden, Ist die Datenquelle noch verfügbar?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Unavailable" xml:space="preserve">
+    <value>Ausgewählte Datenquelle ist nicht verfügbar.</value>
+  </data>
+  <data name="ExternalLookup_Status_SecureStore_Credentials" xml:space="preserve">
+    <value>Keine Anmeldeinformation wurde vom Secure Store Service empfangen.</value>
   </data>
 </root>

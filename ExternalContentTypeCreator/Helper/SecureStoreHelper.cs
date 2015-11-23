@@ -4,6 +4,8 @@ using Microsoft.BusinessData.Infrastructure.SecureStore;
 using System.Runtime.InteropServices;
 using System.Security;
 using Microsoft.SharePoint.BusinessData.Administration;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 
 namespace EFEXCON.ExternalLookup.Helper
 {
@@ -29,7 +31,9 @@ namespace EFEXCON.ExternalLookup.Helper
         /// <param name="lobSystem"></param>
         /// <returns></returns>
         public static Credentials GetCredentialsFromLobSystem(LobSystem lobSystem)
-        {
+        { 
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
+
             var sssId = "";
             var providerimplementation = "";
 
@@ -43,15 +47,24 @@ namespace EFEXCON.ExternalLookup.Helper
             }
 
             if (String.IsNullOrEmpty(sssId))
-                throw new Exception("Secure Store Application ID can not be identified.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_SecureStore", "Resources", language);
+                throw new Exception(message);
+            }
 
             if (String.IsNullOrEmpty(providerimplementation))
-                throw new Exception("Provider implementation for Secure Store Service can not be identified.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_Provider", "Resources", language);
+                throw new Exception(message);
+            }
 
             var credentials = new SecureStoreHelper(sssId, providerimplementation).GetCredentials();
 
             if (credentials == null)
-                throw new NoNullAllowedException("Credentials could not be retrieved from Secure Store Service.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_Credentials", "Resources", language);
+                throw new NoNullAllowedException(message);
+            }
 
             return credentials;
         }
@@ -62,6 +75,7 @@ namespace EFEXCON.ExternalLookup.Helper
         /// <returns></returns>
         public Credentials GetCredentials()
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
             Credentials userCredentials = new Credentials();
 
             ISecureStoreProvider provider = GetSecureStoreProvider();
@@ -96,7 +110,10 @@ namespace EFEXCON.ExternalLookup.Helper
                     var loginName = SecureStringToString(secureUsername);
 
                     if (!loginName.Contains("\\"))
-                        throw new FormatException("Login name does not include domain information.");
+                    {
+                        var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_DomainMissing", "Resources", language);
+                        throw new FormatException(message);
+                    }
 
                     var userArray = loginName.Split('\\');
 
@@ -119,10 +136,14 @@ namespace EFEXCON.ExternalLookup.Helper
         /// <returns></returns>
         private ISecureStoreProvider GetSecureStoreProvider()
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
             Type providerType = Type.GetType(_providerImplementation);
 
-            if(providerType == null)
-                throw new NoNullAllowedException("Provider type of secure store provider cannot be identified.");
+            if (providerType == null)
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_ProviderType", "Resources", language);
+                throw new NoNullAllowedException(message);
+            }
 
             return Activator.CreateInstance(providerType)
                 as ISecureStoreProvider;

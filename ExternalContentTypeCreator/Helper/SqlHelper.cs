@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 
 namespace EFEXCON.ExternalLookup.Helper
 {
@@ -20,6 +21,8 @@ namespace EFEXCON.ExternalLookup.Helper
         /// <returns></returns>
         private static string GetDatabaseConnectionString(LobSystem lobSystem)
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
+
             string server = "";
             string database = "";
 
@@ -33,10 +36,16 @@ namespace EFEXCON.ExternalLookup.Helper
             }
 
             if (String.IsNullOrEmpty(server))
-                throw new NoNullAllowedException("Server string is not defined.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_Server", "Resources", language);
+                throw new NoNullAllowedException(message);
+            }
 
             if (String.IsNullOrEmpty(database))
-                throw new NoNullAllowedException("Database string is not defined.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_Database", "Resources", language);
+                throw new NoNullAllowedException(message);
+            }
 
             // Good read on connection strings and integrated security:
             // http://stackoverflow.com/questions/1229691/difference-between-integrated-security-true-and-integrated-security-sspi
@@ -52,10 +61,15 @@ namespace EFEXCON.ExternalLookup.Helper
         /// <returns></returns>
         public static Microsoft.SharePoint.BusinessData.Administration.PropertyCollection GetLobSystemInstanceProperties(LobSystem lobSystem)
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
+
             List<LobSystemInstance> list = lobSystem.LobSystemInstances.ToList();
 
             if (!list.Any())
-                throw new Exception("No LobSystemInstance available for LobSystem.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_LobSystem", "Resources", language);
+                throw new Exception(message);
+            }
 
             LobSystemInstance instance = list[0];
 
@@ -69,6 +83,7 @@ namespace EFEXCON.ExternalLookup.Helper
         /// <returns></returns>
         public static List<String> GetTablesForLobSystem(LobSystem lobSystem, Credentials credentials)
         {
+            uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
             var connectionString = GetDatabaseConnectionString(lobSystem);
 
             string database =
@@ -76,7 +91,10 @@ namespace EFEXCON.ExternalLookup.Helper
                     0];
 
             if (String.IsNullOrEmpty(database))
-                throw new NoNullAllowedException("Database string is not defined.");
+            {
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Helper_Database", "Resources", language);
+                throw new NoNullAllowedException(message);
+            }
 
             try
             {

@@ -133,18 +133,18 @@
     <value>Is key?</value>
   </data>
   <data name="ExternalLookup_ContentType_DataSource_Select" xml:space="preserve">
-    <value>SELECT</value>
+    <value>-- SELECT --</value>
   </data>
   <data name="ExternalLookup_ContentType_DataSource_Selection" xml:space="preserve">
     <value>Data source selection</value>
+  </data>
+  <data name="ExternalLookup_ContentType_DataSource_Table" xml:space="preserve">
+    <value>Table</value>
   </data>
   <data name="ExternalLookup_ContentType_List_Title" xml:space="preserve">
     <value>Available external content types</value>
   </data>
   <data name="ExternalLookup_ContentType_Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="ExternalLookup_ContentType_Name_Placeholder" xml:space="preserve">
     <value>Name for new ECT</value>
   </data>
   <data name="ExternalLookup_ContentType_New_Title" xml:space="preserve">
@@ -155,6 +155,9 @@
   </data>
   <data name="ExternalLookup_ContentType_Type" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="ExternalLookup_Creator_KeyColumn" xml:space="preserve">
+    <value>Key column is not set.</value>
   </data>
   <data name="ExternalLookup_DataSource_Add" xml:space="preserve">
     <value>Add data source</value>
@@ -213,7 +216,76 @@
   <data name="ExternalLookup_General_Save" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="ExternalLookup_Helper_Credentials" xml:space="preserve">
+    <value>Credentials could not be retrieved from Secure Store Service.</value>
+  </data>
+  <data name="ExternalLookup_Helper_Database" xml:space="preserve">
+    <value>Database string is not defined.</value>
+  </data>
+  <data name="ExternalLookup_Helper_DomainMissing" xml:space="preserve">
+    <value>Login name does not include domain information.</value>
+  </data>
+  <data name="ExternalLookup_Helper_LobSystem" xml:space="preserve">
+    <value>No LobSystemInstance available for LobSystem.</value>
+  </data>
+  <data name="ExternalLookup_Helper_Provider" xml:space="preserve">
+    <value>Provider implementation for Secure Store Service can not be identified.</value>
+  </data>
+  <data name="ExternalLookup_Helper_ProviderType" xml:space="preserve">
+    <value>Provider type of secure store provider cannot be identified.</value>
+  </data>
+  <data name="ExternalLookup_Helper_SecureStore" xml:space="preserve">
+    <value>Secure Store Application ID can not be identified.</value>
+  </data>
+  <data name="ExternalLookup_Helper_Server" xml:space="preserve">
+    <value>Server string is not defined.</value>
+  </data>
   <data name="ExternalLookup_Link_Details" xml:space="preserve">
     <value>Show Details</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Create" xml:space="preserve">
+    <value>Could not create external content type.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Delete" xml:space="preserve">
+    <value>External Content type could not be deleted.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Duplicate" xml:space="preserve">
+    <value>Could not create external content type. An external content type with the same name is still in the cache.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_None" xml:space="preserve">
+    <value>No external content type available.</value>
+  </data>
+  <data name="ExternalLookup_Status_ContentType_Permissions" xml:space="preserve">
+    <value>The content type could not be retrieved. Do you have the right permissions?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Access" xml:space="preserve">
+    <value>Could not access Business Data Connectivity service. Do you have the right permissions?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Connection" xml:space="preserve">
+    <value>Could not create a connection to the data source.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Create" xml:space="preserve">
+    <value>Could not create data source.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Delete" xml:space="preserve">
+    <value>Data source could not be deleted.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Listing" xml:space="preserve">
+    <value>Could not access Business Data Connectivity service to list data sources.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_None" xml:space="preserve">
+    <value>No data source available.</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Permissions" xml:space="preserve">
+    <value>The data source could not be created. Do you have the right permissions?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Structure" xml:space="preserve">
+    <value>The data structure could not be loaded. Is the data source still valid and accessible?</value>
+  </data>
+  <data name="ExternalLookup_Status_DataSource_Unavailable" xml:space="preserve">
+    <value>Selected data source is not available.</value>
+  </data>
+  <data name="ExternalLookup_Status_SecureStore_Credentials" xml:space="preserve">
+    <value>Could not get credentials from Secure Store Service.</value>
   </data>
 </root>

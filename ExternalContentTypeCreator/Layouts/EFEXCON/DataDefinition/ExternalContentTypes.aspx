@@ -49,7 +49,7 @@
                 </span>
             </span>
             <span class="table-row">
-                <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="Table"></asp:Label></span>
+                <span class="table-cell"><asp:Label ID="DataSourceEntityLabel" runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_Table%>"></asp:Label></span>
                 <span class="table-cell">
                     <asp:DropDownList ID="DataSourceEntity" OnSelectedIndexChanged="DataSourceEntity_SelectedIndexChanged" AppendDataBoundItems="true" AutoPostBack="true" runat="server" Width="100%"></asp:DropDownList>  
                 </span>
@@ -70,10 +70,10 @@
                     <span class="table-row">
                         <span class="table-cell"><%# Eval("Name") %></span>
                         <span class="table-cell">
-                            <input type="checkbox" name="struct_<%# Eval("Name") %>_check" value="Test"/>
+                            <input type="checkbox" name="struct_<%# Eval("Name") %>_check" />
                         </span>
                         <span class="table-cell">
-                            <input type="checkbox" name="struct_<%# Eval("Name") %>_key" value="Test"/>
+                            <input type="checkbox" name="struct_<%# Eval("Name") %>_key" />
                         </span>
                         <span class="table-cell">
                             <input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" />

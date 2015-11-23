@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint.WebControls;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -9,9 +11,7 @@ using EFEXCON.ExternalLookup.Helper;
 
 namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 {
-    using Core;
-    using Microsoft.SharePoint;
-    using Microsoft.SharePoint.Utilities;
+    using Core;    
 
     public partial class DataSources : LayoutsPageBase
     {
@@ -57,7 +57,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             catch(Exception ex)
             {
-                Status.InnerHtml = HtmlHelper.CreateErrorString("Could not get credentials from Secure Store Service.", ex);
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_SecureStore_Credentials", "Resources", _language);
+                Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
             }
 
             var connectionString = 
@@ -78,12 +79,14 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     }
                     else
                     {
-                        Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create data source.", null);
+                        var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Create", "Resources", _language);
+                        Status.InnerHtml = HtmlHelper.CreateErrorString(message, null);
                     }
                 }
                 catch(Exception ex)
                 {
-                    Status.InnerHtml = HtmlHelper.CreateErrorString("The data source could not be created. Do you have the right permissions?", ex);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Permissions", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
                 }
             }
         }
@@ -109,7 +112,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             catch(Exception ex)
             {
-                Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create a connection to the data source." , ex);
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Connection", "Resources", _language);
+                Status.InnerHtml = HtmlHelper.CreateErrorString(message , ex);
                 return false; 
             }
         }
@@ -147,12 +151,14 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                 if (counter == 0)
                 {
-                    DataSourceContainer.InnerHtml = "No data source configured.";
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_None", "Resources", _language);
+                    DataSourceContainer.InnerHtml = message;
                 }
             }
             catch(Exception ex)
             {
-                Status.InnerHtml = HtmlHelper.CreateErrorString("Could not access Business Data Connectivity service to list data sources.", ex);
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Listing", "Resources", _language);
+                Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
             }
            
         }
@@ -176,14 +182,15 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 }
                 else
                 {
-                    Status.InnerHtml = HtmlHelper.CreateErrorString("Data source could not be deleted.", null);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Delete", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, null);
                 }
             }
             catch(Exception ex)
             {
-                Status.InnerHtml = HtmlHelper.CreateErrorString("Data source could not be deleted.", ex);
-            }
-            
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Delete", "Resources", _language);
+                Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
+            }            
         }
     }
 }

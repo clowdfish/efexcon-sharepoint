@@ -6,7 +6,9 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 {
     using Core;
     using Helper;
+    using Microsoft.SharePoint;
     using Microsoft.SharePoint.BusinessData.Administration;
+    using Microsoft.SharePoint.Utilities;
     using System.Collections.Generic;
     using System.Linq;
     using System.Web.UI;
@@ -14,15 +16,20 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
     public partial class ExternalContentTypes : LayoutsPageBase
     {
+        protected uint _language = 1033;
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (SPContext.Current.Web != null)
+                _language = SPContext.Current.Web.Language;
+
             ListExternalContentTypes();
 
             if (!Page.IsPostBack)
             {
                 ShowNewFormButton.Style.Add("display", "block");
                 NewForm.Style.Add("display", "none");
-                DataSourceStructureTable.Style.Add("display", "none");
+                DataSourceStructureTable.Style.Add("display", "none");                
 
                 try
                 {
@@ -31,7 +38,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 }
                 catch(Exception ex)
                 {
-                    HtmlHelper.CreateErrorString("Could not access Business Data Connectivity service. Do you have the right permissions?", ex);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Access", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
                 }
             }
             else
@@ -52,7 +60,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                 if (lobSystem == null)
                 {
-                    HtmlHelper.CreateErrorString("Selected data source cannot be accessed.", null);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Unavailable", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, null);
                     return;
                 }
 
@@ -62,7 +71,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                     DataSourceEntity.Items.Add(new ListItem
                     {
-                        Text = "-- SELECT --",
+                        Text = SPUtility.GetLocalizedString("$Resources:ExternalLookup_ContentType_DataSource_Select", "Resources", _language),
                         Value = "-1"
                     });
                
@@ -71,7 +80,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 }
                 catch(Exception ex)
                 {
-                    HtmlHelper.CreateErrorString("The data structure could not be loaded. Is the data source still valid and accessible?", ex);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Structure", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
                 }
             }
             else
@@ -96,7 +106,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                 if (lobSystem == null)
                 {
-                    HtmlHelper.CreateErrorString("Selected data source cannot be accessed.", null);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Unavailable", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, null);
                     return;
                 }
 
@@ -111,7 +122,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 }
                 catch (Exception ex)
                 {
-                    HtmlHelper.CreateErrorString("The data structure could not be loaded. Is the data source still valid and accessible?", ex);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_DataSource_Structure", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
                 }               
             }      
             else
@@ -142,7 +154,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     {
                         ID = "delete_" + contentType.Name,
                         CommandArgument = contentType.Name,
-                        Text = "delete"
+                        Text = SPUtility.GetLocalizedString("$Resources:ExternalLookup_General_Delete", "Resources", _language)
                     };
                     link.Command += DeleteContentType;
                     ExternalContentTypesContainer.Controls.Add(link);
@@ -153,12 +165,14 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
                 if (counter == 0)
                 {
-                    ExternalContentTypesContainer.InnerHtml = "No external content type available.";
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_ContentType_None", "Resources", _language);
+                    ExternalContentTypesContainer.InnerHtml = message;
                 }
             }
             catch(Exception ex)
             {
-                Status.InnerHtml = HtmlHelper.CreateErrorString("The content type could not be retrieved. Do you have the right permissions?", ex);
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_ContentType_Permissions", "Resources", _language);
+                Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
 
             }
         }
@@ -216,11 +230,14 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             {
                 if (ex.ToString().Contains("has an Duplicate value in Field"))
                 {
-                    Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create external content type. An external content type with " +
-                        "the same name is still in the cache." , ex);
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_ContentType_Duplicate", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
                 }
                 else
-                    Status.InnerHtml = HtmlHelper.CreateErrorString("Could not create external content type.", ex);
+                {
+                    var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_ContentType_Create", "Resources", _language);
+                    Status.InnerHtml = HtmlHelper.CreateErrorString(message, ex);
+                }
             }
 
             ListExternalContentTypes();
@@ -246,7 +263,8 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             }
             else
             {
-                Status.InnerHtml = "External Content type could not be deleted.";
+                var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_ContentType_Delete", "Resources", _language);
+                Status.InnerHtml = message;
             }
         }
 
@@ -257,7 +275,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             LobSystems.Items.Clear();
             LobSystems.Items.Add(new ListItem
             {
-                Text = "-- SELECT --",
+                Text = SPUtility.GetLocalizedString("$Resources:ExternalLookup_ContentType_DataSource_Select", "Resources", _language),
                 Value = "-1"
             });
             LobSystems.DataSource = Creator.ListAllLobSystems().Select(x => x.Name);
