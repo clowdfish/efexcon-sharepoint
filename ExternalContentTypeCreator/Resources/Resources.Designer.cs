@@ -439,6 +439,42 @@ namespace ExternalContentTypeCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All fields must be filled..
+        /// </summary>
+        internal static string ExternalLookup_Message_AllFields {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Message_AllFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must include the key column in the ECT..
+        /// </summary>
+        internal static string ExternalLookup_Message_IncludeKey {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Message_IncludeKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must not select more than one column as key..
+        /// </summary>
+        internal static string ExternalLookup_Message_KeyMaximum {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Message_KeyMaximum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select one column as key..
+        /// </summary>
+        internal static string ExternalLookup_Message_KeyMinimum {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Message_KeyMinimum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not create external content type..
         /// </summary>
         internal static string ExternalLookup_Status_ContentType_Create {

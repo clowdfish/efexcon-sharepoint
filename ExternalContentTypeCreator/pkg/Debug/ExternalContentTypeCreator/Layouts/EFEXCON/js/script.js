@@ -19,7 +19,7 @@ function checkForm() {
     });
 
     if (inputIsMissing) {
-        $('#newFormStatus').text("All fields must be filled.");
+        $('#newFormStatus').text(allFieldsFilled);
         $('#newFormStatus').css('color', 'red');
         return false;
     }
@@ -47,12 +47,12 @@ function validStructure() {
         });
 
     if (selectedKeys.length === 0) {
-        alert("You must select one column as key.");
+        alert(atLeastOneKey);
         return false;
     }
 
     if (selectedKeys.length > 1) {
-        alert("You must not select more than one column as key.");
+        alert(notMoreThanOneKey);
         return false;
     }
 
@@ -66,7 +66,7 @@ function validStructure() {
     }).length === 1;
 
     if (!elementIsIncluded) {
-        alert("You must include the key column in the ECT.");
+        alert(includeKey);
         return false;
     }
 

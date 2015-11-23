@@ -246,6 +246,18 @@
   <data name="ExternalLookup_Link_Details" xml:space="preserve">
     <value>Details anzeigen</value>
   </data>
+  <data name="ExternalLookup_Message_AllFields" xml:space="preserve">
+    <value>Alle Felder müssen befüllt sein.</value>
+  </data>
+  <data name="ExternalLookup_Message_IncludeKey" xml:space="preserve">
+    <value>Die Schlüsselspalte muss im externen Inhaltstyp verwendet werden.</value>
+  </data>
+  <data name="ExternalLookup_Message_KeyMaximum" xml:space="preserve">
+    <value>Nur eine Spalte darf als Schlüssel definiert sein.</value>
+  </data>
+  <data name="ExternalLookup_Message_KeyMinimum" xml:space="preserve">
+    <value>Es muss eine Spalte als Schlüssel definiert sein.</value>
+  </data>
   <data name="ExternalLookup_Status_ContentType_Create" xml:space="preserve">
     <value>Externer Inhaltstyp konnte nicht erstellt werden.</value>
   </data>

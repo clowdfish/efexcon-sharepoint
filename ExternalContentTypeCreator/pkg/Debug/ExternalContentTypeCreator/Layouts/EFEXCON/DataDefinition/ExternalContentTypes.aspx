@@ -90,6 +90,12 @@
     </div>
     <div id="Status" class="status" runat="server"></div>
 
+    <script type="text/javascript">
+        var allFieldsFilled = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_AllFields%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
+        var includeKey = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_IncludeKey%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
+        var atLeastOneKey = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_KeyMinimum%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
+        var notMoreThanOneKey = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_KeyMaximum%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
+    </script>
     <script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../js/script.js"></script>
 </asp:Content>

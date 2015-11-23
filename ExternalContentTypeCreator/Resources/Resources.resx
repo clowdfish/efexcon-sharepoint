@@ -243,6 +243,18 @@
   <data name="ExternalLookup_Link_Details" xml:space="preserve">
     <value>Show Details</value>
   </data>
+  <data name="ExternalLookup_Message_AllFields" xml:space="preserve">
+    <value>All fields must be filled.</value>
+  </data>
+  <data name="ExternalLookup_Message_IncludeKey" xml:space="preserve">
+    <value>You must include the key column in the ECT.</value>
+  </data>
+  <data name="ExternalLookup_Message_KeyMaximum" xml:space="preserve">
+    <value>You must not select more than one column as key.</value>
+  </data>
+  <data name="ExternalLookup_Message_KeyMinimum" xml:space="preserve">
+    <value>You must select one column as key.</value>
+  </data>
   <data name="ExternalLookup_Status_ContentType_Create" xml:space="preserve">
     <value>Could not create external content type.</value>
   </data>
