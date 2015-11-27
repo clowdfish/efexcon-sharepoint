@@ -39,7 +39,7 @@ function validStructure() {
             checkboxArray.push(name);
     });
 
-    console.log(JSON.stringify(checkboxArray, null, 2));
+    //console.log(JSON.stringify(checkboxArray, null, 2));
 
     var selectedKeys =
         checkboxArray.filter(function (checkbox) {
@@ -73,6 +73,12 @@ function validStructure() {
     $(".data-source-structure-table input[type=text]").each(function () {
         var name = $(this).attr("name");
         var value = $(this).val();
+
+        if (name.indexOf("struct_") == 0) {
+            if (value == "ID") {
+                alert(cannotUseSharePointKeyWord + " " + value);
+            }
+        }
     });
 
     return true;

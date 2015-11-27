@@ -62,6 +62,7 @@
                     <span class="table-row">
                         <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_ColumnName%>" /></span>
                         <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_Include%>" /></span>
+                        <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_IsSearchField%>" /></span>
                         <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_IsKey%>" /></span>
                         <span class="table-cell"><asp:Literal runat="server" Text="<%$Resources:Resources,ExternalLookup_ContentType_DataSource_FieldName%>" /></span>
                     </span>
@@ -71,6 +72,9 @@
                         <span class="table-cell"><%# Eval("Name") %></span>
                         <span class="table-cell">
                             <input type="checkbox" name="struct_<%# Eval("Name") %>_check" />
+                        </span>
+                        <span class="table-cell">
+                            <input type="checkbox" name="struct_<%# Eval("Name") %>_search" />
                         </span>
                         <span class="table-cell">
                             <input type="checkbox" name="struct_<%# Eval("Name") %>_key" />
@@ -95,6 +99,7 @@
         var includeKey = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_IncludeKey%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
         var atLeastOneKey = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_KeyMinimum%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
         var notMoreThanOneKey = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_KeyMaximum%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
+        var cannotUseSharePointKeyWord = "<SharePoint:EncodedLiteral runat='server' text='<%$Resources:Resources,ExternalLookup_Message_KeyWordUsed%>' EncodeMethod='EcmaScriptStringLiteralEncode'/>";
     </script>
     <script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../js/script.js"></script>

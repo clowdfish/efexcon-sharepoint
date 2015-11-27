@@ -132,6 +132,9 @@
   <data name="ExternalLookup_ContentType_DataSource_IsKey" xml:space="preserve">
     <value>Ist Schlüssel?</value>
   </data>
+  <data name="ExternalLookup_ContentType_DataSource_IsSearchField" xml:space="preserve">
+    <value>Durchsuchbar?</value>
+  </data>
   <data name="ExternalLookup_ContentType_DataSource_Select" xml:space="preserve">
     <value>-- AUSWAHL --</value>
   </data>
@@ -257,6 +260,9 @@
   </data>
   <data name="ExternalLookup_Message_KeyMinimum" xml:space="preserve">
     <value>Es muss eine Spalte als Schlüssel definiert sein.</value>
+  </data>
+  <data name="ExternalLookup_Message_KeyWordUsed" xml:space="preserve">
+    <value>Bitte keine SharePoint Schlüsselwörter als Feldnamen verwenden. Benutztes Schlüsselwort:</value>
   </data>
   <data name="ExternalLookup_Status_ContentType_Create" xml:space="preserve">
     <value>Externer Inhaltstyp konnte nicht erstellt werden.</value>

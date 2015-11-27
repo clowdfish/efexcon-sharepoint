@@ -106,6 +106,15 @@ namespace ExternalContentTypeCreator.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Searchable?.
+        /// </summary>
+        internal static string ExternalLookup_ContentType_DataSource_IsSearchField {
+            get {
+                return ResourceManager.GetString("ExternalLookup_ContentType_DataSource_IsSearchField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -- SELECT --.
         /// </summary>
         internal static string ExternalLookup_ContentType_DataSource_Select {
@@ -471,6 +480,15 @@ namespace ExternalContentTypeCreator.Resources {
         internal static string ExternalLookup_Message_KeyMinimum {
             get {
                 return ResourceManager.GetString("ExternalLookup_Message_KeyMinimum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You cannot use SharePoint keywords to name your fields. Keyword used:.
+        /// </summary>
+        internal static string ExternalLookup_Message_KeyWordUsed {
+            get {
+                return ResourceManager.GetString("ExternalLookup_Message_KeyWordUsed", resourceCulture);
             }
         }
         

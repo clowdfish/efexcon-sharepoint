@@ -188,35 +188,28 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
             ShowNewFormButton.Style.Add("display", "block");
             NewForm.Style.Add("display", "none");
 
-            List<string> list = new List<string>();
-            List<string> checkList = new List<string>();
+            // clear old status messages 
+            Status.InnerHtml = "";
+
+            var resultList = new List<ExternalColumnReference>();
 
             // process posted inputs
             foreach (string name in Request.Form.AllKeys)
             {               
-                if (name.StartsWith("struct_"))
-                {    
-                    if(name.EndsWith("_check"))
-                    {
-                        checkList.Add(name.Substring(7));
-                    }
-                    else if(!name.EndsWith("_key") && !name.EndsWith("_type"))
-                    {
-                        list.Add(name.Substring(7));
-                    }
-                }
-            }
-
-            List<ExternalColumnReference> resultList = (
-                from item in list
-                where checkList.Contains(item + "_check")
-                select new ExternalColumnReference()
+                if (name.StartsWith("struct_") && name.EndsWith("_check"))
                 {
-                    SourceName = item, 
-                    DestinationName = Request.Form["struct_" + item], 
-                    Type = Request.Form["struct_" + item + "_type"], 
-                    IsKey = !String.IsNullOrEmpty(Request.Form["struct_" + item + "_key"])
-                }).ToList();
+                    var resultName = name.Substring(7, name.Length - 13);
+
+                    resultList.Add(new ExternalColumnReference()
+                    {
+                        SourceName = resultName,
+                        DestinationName = Request.Form["struct_" + resultName],
+                        Type = Request.Form["struct_" + resultName + "_type"],
+                        IsKey = !String.IsNullOrEmpty(Request.Form["struct_" + resultName + "_key"]),
+                        IsSearchField = !String.IsNullOrEmpty(Request.Form["struct_" + resultName + "_search"])
+                    });
+                }                 
+            }         
 
             string newContentTypeName = NewContentTypeName.Value;
             string tableName = DataSourceEntity.SelectedItem.Text;

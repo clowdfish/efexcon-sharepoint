@@ -10,10 +10,18 @@ namespace EFEXCON.ExternalLookup.Helper
 
     public class ExternalColumnReference
     {
+        /// <summary>
+        /// The name of the original field of the external data source. 
+        /// </summary>
         public string SourceName { get; set; }
+
+        /// <summary>
+        /// The name of the field that is used in the new external content type.
+        /// </summary>
         public string DestinationName { get; set; }
         public string _type { get; set; }
         public Boolean IsKey { get; set; }
+        public Boolean IsSearchField { get; set; }
 
         public string Type
         {
