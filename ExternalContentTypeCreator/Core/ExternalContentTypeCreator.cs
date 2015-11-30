@@ -245,7 +245,7 @@ namespace EFEXCON.ExternalLookup.Core
             string itemMethodEntity = name;
 
             // Create the Finder method 
-            Method getListMethod = entity.Methods.Create(listMethodName, true, false, itemMethodEntity);
+            Method getListMethod = entity.Methods.Create(listMethodName, true, false, table); // itemMethodEntity
 
             // Specify the query
             // "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer]"             
@@ -258,20 +258,124 @@ namespace EFEXCON.ExternalLookup.Core
             queryAllItemsString = queryAllItemsString.Substring(0, queryAllItemsString.Length - 2);
             queryAllItemsString += " FROM [" + table + "]";
 
+            var whereClause = " WHERE";
+            foreach (ExternalColumnReference reference in referenceList)
+            {
+                if (reference.IsSearchField)
+                {
+                    whereClause += String.Format(" ((@{1} IS NULL) OR ((@{1} IS NULL AND [{0}] IS NULL) OR [{0}] LIKE @{1})) AND", reference.SourceName, reference.DestinationName);
+                }
+            }
+
+            if (whereClause.Length == 7)
+                whereClause = "";
+            else
+            {
+                whereClause = whereClause.Substring(0, whereClause.Length - 4);
+            }    
+
+            queryAllItemsString += whereClause;
+
             getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);
 
             // Set the command type 
             getListMethod.Properties.Add("RdbCommandType", "Text");
 
+            getListMethod.Properties.Add("BackEndObjectType", "SqlServerTable");
+            getListMethod.Properties.Add("BackEndObject", table);
+            getListMethod.Properties.Add("Schama", "dbo");
+
+            // Create the Entity return parameter
+            Parameter modelParameter = getListMethod.Parameters.Create(name, true, DirectionType.Return);
+
+            // Create the TypeDescriptors for the Entity return parameter 
+            TypeDescriptor returnRootCollectionTypeDescriptor =
+                modelParameter.CreateRootTypeDescriptor(
+                    listMethodEntity, 
+                    true, 
+                    "System.Data.IDataReader, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                    listMethodEntity, 
+                    null, 
+                    null, // filter descriptor
+                    TypeDescriptorFlags.IsCollection, 
+                    null, 
+                    catalog);
+
+            TypeDescriptor returnRootElementTypeDescriptor = 
+                returnRootCollectionTypeDescriptor.ChildTypeDescriptors.Create(
+                    itemMethodEntity, 
+                    true, 
+                    "System.Data.IDataRecord, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                    itemMethodEntity, 
+                    null, 
+                    null, 
+                    TypeDescriptorFlags.None, 
+                    null);
+
+            foreach (ExternalColumnReference reference in referenceList)
+            {
+                IdentifierReference identityReference = null;
+                if(reference.IsKey) 
+                    identityReference = new IdentifierReference(reference.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog);
+
+                if (reference.IsSearchField)
+                {
+                    FilterType filterType = reference.Type == "System.String" ? FilterType.Wildcard : FilterType.Comparison;
+                    FilterDescriptor filter = getListMethod.FilterDescriptors.Create(
+                        reference.DestinationName + "Filter", true, filterType, reference.SourceName);
+
+                    filter.Properties.Add("CaseSensitive", false);
+                    filter.Properties.Add("IsDefault", false);
+                    filter.Properties.Add("UsedForDisambiguation", false);                    
+                    filter.Properties.Add("UseValueAsDontCare", true);
+                    filter.Properties.Add("DontCareValue", "");
+                                        
+                    // Create the filter input parameter.
+                    Parameter filterParameter =
+                        getListMethod.Parameters.Create(
+                        "@" + reference.DestinationName, true, DirectionType.In);
+
+                    // Create the TypeDescriptor for the filter parameter.
+                    TypeDescriptor filterParamTypeDescriptor =
+                        filterParameter.CreateRootTypeDescriptor(
+                        reference.SourceName,
+                        true,
+                        reference.Type,
+                        reference.SourceName,
+                        null,
+                        filter,
+                        TypeDescriptorFlags.None,
+                        null,
+                        catalog);
+                }
+             
+                var childTypeDescriptor = returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
+                    reference.SourceName,
+                    true,
+                    reference.Type,
+                    reference.SourceName,
+                    identityReference,
+                    null,
+                    TypeDescriptorFlags.None,
+                    null
+                );
+
+                childTypeDescriptor.Properties.Add("ShowInPicker", true);                               
+            }
+
             // Create a Filter so that we can limit the number 
-            // of rows returned;
+            // of rows returned;          
             // otherwise we may exceed the list query size threshold.
+            var identifierField = referenceList.Where(x => x.IsKey).ToList().First();
+            if (identifierField == null)
+                throw new NullReferenceException("Could not get identifier column.");        
+
             FilterDescriptor limitRowsReturnedFilter =
                 getListMethod.FilterDescriptors.Create(
-                    "RowsReturnedLimit", true, FilterType.Limit, null);
+                    "RowsReturnedLimit", true, FilterType.Limit, identifierField.SourceName);
 
-            limitRowsReturnedFilter.Properties.Add(
-                "IsDefault", true);
+            limitRowsReturnedFilter.Properties.Add("IsDefault", false);
+            limitRowsReturnedFilter.Properties.Add("UsedForDisambiguation", false);
 
             // Create the RowsToRetrieve input parameter.
             Parameter maxRowsReturnedParameter =
@@ -292,73 +396,6 @@ namespace EFEXCON.ExternalLookup.Core
                 null,
                 catalog);
 
-            // Create the Entity return parameter
-            Parameter modelParameter = getListMethod.Parameters.Create(name, true, DirectionType.Return);
-
-            // Create the TypeDescriptors for the Entity return parameter 
-            TypeDescriptor returnRootCollectionTypeDescriptor =
-                modelParameter.CreateRootTypeDescriptor(
-                    listMethodEntity, 
-                    true, 
-                    "System.Data.IDataReader, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-                    listMethodEntity, 
-                    null, 
-                    null, // filter descriptor
-                    TypeDescriptorFlags.IsCollection, 
-                    null, 
-                    catalog);
-
-            TypeDescriptor returnRootElementTypeDescriptor = 
-                returnRootCollectionTypeDescriptor.ChildTypeDescriptors.Create(
-                    itemMethodEntity, 
-                    true, 
-                    "System.Data.IDataRecord, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
-                    itemMethodEntity, 
-                    null, 
-                    null, 
-                    TypeDescriptorFlags.None, 
-                    null);
-            
-            foreach (ExternalColumnReference reference in referenceList)
-            {
-                IdentifierReference identityReference = null;
-                if (reference.IsKey)
-                {
-                    identityReference = new IdentifierReference(reference.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog);
-                }
-
-                FilterDescriptor filter = null;
-                if (reference.IsSearchField)
-                {
-                    FilterType filterType = reference.Type == "System.String" ? FilterType.Wildcard : FilterType.Comparison; 
-                    filter = getListMethod.FilterDescriptors.Create(
-                        reference.DestinationName + "Filter", true, filterType, reference.SourceName);
-
-                    //filter.Properties.Add("IgnoreFilterIfValueIs", null); // leads to NPE
-                    if(filterType == FilterType.Wildcard)
-                        filter.Properties.Add("DefaultValue", "*");
-
-                    filter.Properties.Add("CaseSensitive", false);
-                    filter.Properties.Add("IsDefault", false);
-                    filter.Properties.Add("UsedForDisambiguation", false);
-                    filter.Properties.Add("DontCareValue", "");
-                    filter.Properties.Add("UseValueAsDontCare", true);
-                }
-
-                var childTypeDescriptor = returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
-                    reference.SourceName, 
-                    true, 
-                    reference.Type,
-                    reference.SourceName, 
-                    identityReference, 
-                    filter,
-                    TypeDescriptorFlags.None, 
-                    null
-                );
-
-                childTypeDescriptor.Properties.Add("ShowInPicker", true);
-            }
-
             // Create the finder method instance
             MethodInstance readListMethodInstance =
                 getListMethod.MethodInstances.Create(
@@ -367,6 +404,8 @@ namespace EFEXCON.ExternalLookup.Core
                     returnRootCollectionTypeDescriptor, 
                     MethodInstanceType.Finder, 
                     true);
+
+            readListMethodInstance.Properties.Add("RootFinder", "");
 
             // Set the default value for the number of rows 
             // to be returned filter.
@@ -395,7 +434,7 @@ namespace EFEXCON.ExternalLookup.Core
 
             ExternalColumnReference keyColumn = null;
 
-            Method getItemMethod = entity.Methods.Create(itemMethodName, true, false, itemMethodName);
+            Method getItemMethod = entity.Methods.Create(itemMethodName, true, false, table);
 
             // Specify the query 
             // "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer] WHERE [CustomerId] = @CustomerId"
@@ -450,7 +489,7 @@ namespace EFEXCON.ExternalLookup.Core
                 modelParameter.CreateRootTypeDescriptor(
                     listMethodEntity, 
                     true, 
-                    "System.Data.IDataReader, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                    "System.Data.IDataReader, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                     listMethodEntity, 
                     null, 
                     null, 
@@ -462,7 +501,7 @@ namespace EFEXCON.ExternalLookup.Core
                 returnRootCollectionTypeDescriptor.ChildTypeDescriptors.Create(
                     itemMethodEntity, 
                     true, 
-                    "System.Data.IDataRecord, System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                    "System.Data.IDataRecord, System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                     itemMethodEntity, 
                     null, 
                     null, 
@@ -494,7 +533,7 @@ namespace EFEXCON.ExternalLookup.Core
             // Create the specific finder method instance 
             getItemMethod.MethodInstances.Create(itemMethodName, true, returnRootElementTypeDescriptor, MethodInstanceType.SpecificFinder, true); // getCustomer
         }
-
+  
         /// <summary>
         /// 
         /// </summary>

@@ -7,7 +7,9 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
     using Core;
     using Helper;
     using Microsoft.SharePoint;
+    using Microsoft.SharePoint.Administration;
     using Microsoft.SharePoint.BusinessData.Administration;
+    using Microsoft.SharePoint.BusinessData.SharedService;
     using Microsoft.SharePoint.Utilities;
     using System.Collections.Generic;
     using System.Linq;
@@ -159,6 +161,15 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                     link.Command += DeleteContentType;
                     ExternalContentTypesContainer.Controls.Add(link);
 
+                    var print = new LinkButton
+                    {
+                        ID = "print_" + contentType.Name,
+                        CommandArgument = contentType.Name,
+                        Text = " print"
+                    };
+                    print.Command += PrintContentType;
+                    ExternalContentTypesContainer.Controls.Add(print);
+
                     ExternalContentTypesContainer.Controls.Add(separator);
                     counter++;
                 }
@@ -259,6 +270,73 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 var message = SPUtility.GetLocalizedString("$Resources:ExternalLookup_Status_ContentType_Delete", "Resources", _language);
                 Status.InnerHtml = message;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void PrintContentType(object sender, CommandEventArgs e)
+        {
+            string name = e.CommandArgument.ToString();
+
+            SPWeb web = SPContext.Current.Web;
+            BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
+
+            SPServiceContext context = SPServiceContext.GetContext(web.Site);
+            AdministrationMetadataCatalog catalog =
+                service.GetAdministrationMetadataCatalog(context);
+
+            EntityCollection availableEcts = catalog.GetEntities("*", "*", true);
+
+            ShowNewFormButton.Style.Add("display", "block");
+            NewForm.Style.Add("display", "none");
+
+            var message = "";
+            foreach (var entity in availableEcts)
+            {
+                if (entity.Name == name)
+                {
+                    message += "Entity:<br />";
+                    /*
+                    foreach (var props in entity.LobSystem.LobSystemInstances.First().Properties)
+                    {
+                        message += props.Name + " : " + props.Value + "<br />";
+                    }                    
+                    */
+                    foreach (var method in entity.Methods)
+                    {
+                        message += "<br />Method '" + method.Name + "'<br />";
+                        
+                        foreach(var param in method.Parameters)
+                        {
+                            message += "Parameter with TypeDescriptor '" + param.RootTypeDescriptor.Name + "'<br />";
+                            message += "LobName: " + param.RootTypeDescriptor.LobName + "<br />";
+                            message += "Has Filter? " + param.RootTypeDescriptor.ContainsFilterDescriptor + "<br />";
+
+                            foreach (var childDescriptor in param.RootTypeDescriptor.ChildTypeDescriptors)
+                            {
+                                message += "Child TypeDescriptor '" + childDescriptor.Name + "'<br />";
+                                message += "Has Filter? " + childDescriptor.ContainsFilterDescriptor + "<br />";
+                            }
+                            
+                            message += "<br />";
+                        }
+
+                        foreach (var filter in method.FilterDescriptors)
+                        {
+                            message += "<br />Filter '" + filter.Name + "' for field: '" + filter.FilterField + "'<br />";
+                            foreach(var property in filter.Properties)
+                            {
+                                message += property.Name + " : " + property.Value + "<br />"; 
+                            }
+                        }
+                    }
+                }
+            }
+            
+            Status.InnerHtml = message;            
         }
 
         protected void ClearForm()
