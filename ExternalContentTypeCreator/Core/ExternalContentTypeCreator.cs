@@ -318,9 +318,7 @@ namespace EFEXCON.ExternalLookup.Core
                     null, 
                     TypeDescriptorFlags.None, 
                     null);
-
-
-
+            
             foreach (ExternalColumnReference reference in referenceList)
             {
                 IdentifierReference identityReference = null;
@@ -330,46 +328,30 @@ namespace EFEXCON.ExternalLookup.Core
                 }
 
                 FilterDescriptor filter = null;
-
                 if (reference.IsSearchField)
                 {
                     FilterType filterType = reference.Type == "System.String" ? FilterType.Wildcard : FilterType.Comparison; 
                     filter = getListMethod.FilterDescriptors.Create(
-                        reference.DestinationName + "Filter", true, filterType, reference.DestinationName);
+                        reference.DestinationName + "Filter", true, filterType, reference.SourceName);
 
                     //filter.Properties.Add("IgnoreFilterIfValueIs", null); // leads to NPE
-                    //filter.Properties.Add("DefaultValue", null);  // leads to NPE
-                    filter.Properties.Add("LogicalOperatorWithPrevious", "and");
-                    filter.Properties.Add("IsDefault", false);
-                    
-                    // Create the RowsToRetrieve input parameter.
-                    Parameter filterParamter =
-                        getListMethod.Parameters.Create(
-                        "@" + reference.DestinationName + "Filter", true, DirectionType.In);
+                    if(filterType == FilterType.Wildcard)
+                        filter.Properties.Add("DefaultValue", "*");
 
-                    // Create the TypeDescriptor for the MaxRowsReturned parameter.
-                    // using the Filter we have created.
-                    TypeDescriptor filterTypeDescriptor =
-                        filterParamter.CreateRootTypeDescriptor(
-                        reference.DestinationName + "Filter",
-                        true,
-                        reference.Type,
-                        reference.DestinationName + "Filter",
-                        null,
-                        filter,
-                        TypeDescriptorFlags.None,
-                        null,
-                        catalog);
-                        
-                }                
+                    filter.Properties.Add("CaseSensitive", false);
+                    filter.Properties.Add("IsDefault", false);
+                    filter.Properties.Add("UsedForDisambiguation", false);
+                    filter.Properties.Add("DontCareValue", "");
+                    filter.Properties.Add("UseValueAsDontCare", true);
+                }
 
                 var childTypeDescriptor = returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
-                    reference.DestinationName, 
+                    reference.SourceName, 
                     true, 
                     reference.Type,
-                    reference.DestinationName, 
+                    reference.SourceName, 
                     identityReference, 
-                    null, // filter
+                    filter,
                     TypeDescriptorFlags.None, 
                     null
                 );
