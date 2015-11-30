@@ -174,7 +174,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
 
             try
             {
-                var deleted = Creator.DeleteLobSystem(lobName, SystemType.Database);
+                var deleted = Creator.DeleteLobSystem(lobName);
 
                 if (deleted)
                 {

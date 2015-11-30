@@ -159,16 +159,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                         Text = SPUtility.GetLocalizedString("$Resources:ExternalLookup_General_Delete", "Resources", _language)
                     };
                     link.Command += DeleteContentType;
-                    ExternalContentTypesContainer.Controls.Add(link);
-
-                    var print = new LinkButton
-                    {
-                        ID = "print_" + contentType.Name,
-                        CommandArgument = contentType.Name,
-                        Text = " print"
-                    };
-                    print.Command += PrintContentType;
-                    ExternalContentTypesContainer.Controls.Add(print);
+                    ExternalContentTypesContainer.Controls.Add(link);                  
 
                     ExternalContentTypesContainer.Controls.Add(separator);
                     counter++;
@@ -299,12 +290,7 @@ namespace EFEXCON.ExternalLookup.Layouts.DataDefinition
                 if (entity.Name == name)
                 {
                     message += "Entity:<br />";
-                    /*
-                    foreach (var props in entity.LobSystem.LobSystemInstances.First().Properties)
-                    {
-                        message += props.Name + " : " + props.Value + "<br />";
-                    }                    
-                    */
+                  
                     foreach (var method in entity.Methods)
                     {
                         message += "<br />Method '" + method.Name + "'<br />";

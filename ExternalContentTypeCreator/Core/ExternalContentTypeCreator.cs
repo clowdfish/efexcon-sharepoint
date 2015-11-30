@@ -1,24 +1,25 @@
 ﻿using Microsoft.SharePoint.BusinessData.Administration;
 using Microsoft.BusinessData.MetadataModel;
 using Microsoft.BusinessData.Runtime;
+using Microsoft.SharePoint;
 using Microsoft.SharePoint.BusinessData.SharedService;
 using Microsoft.SharePoint.Administration;
-using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 using System;
 using System.Collections.Generic;
-using EFEXCON.ExternalLookup.Helper;
 using System.Linq;
-using Microsoft.SharePoint.Utilities;
 
 namespace EFEXCON.ExternalLookup.Core
 {
+    using Helper;
+
     /// <summary>
     /// Class Creator.
     /// </summary>
     public class Creator
     {
         /// <summary>
-        /// 
+        /// Get list of all available external content types.
         /// </summary>
         /// <returns></returns>
         public static List<Entity> ListAllExternalContentTypes()
@@ -27,7 +28,7 @@ namespace EFEXCON.ExternalLookup.Core
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
 
             SPServiceContext context = SPServiceContext.GetContext(web.Site);
-            AdministrationMetadataCatalog catalog = 
+            AdministrationMetadataCatalog catalog =
                 service.GetAdministrationMetadataCatalog(context);
 
             EntityCollection ects = catalog.GetEntities("*", "*", true);
@@ -35,7 +36,8 @@ namespace EFEXCON.ExternalLookup.Core
         }
 
         /// <summary>
-        /// 
+        /// Creates a new LobSystem object and adds it to the Business Data 
+        /// Connectivity Service.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="type"></param>
@@ -50,7 +52,7 @@ namespace EFEXCON.ExternalLookup.Core
 
             foreach (var lobSystem in availableLobSystems)
             {
-                if(lobSystem.Name == name && lobSystem.SystemType == type)
+                if (lobSystem.Name == name && lobSystem.SystemType == type)
                 {
                     return lobSystem;
                 }
@@ -61,7 +63,8 @@ namespace EFEXCON.ExternalLookup.Core
         }
 
         /// <summary>
-        /// 
+        /// Return a LobSystem object or null, if no LobSystem with the given 
+        /// name exists.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -85,12 +88,11 @@ namespace EFEXCON.ExternalLookup.Core
         }
 
         /// <summary>
-        /// 
+        /// Delete LobSystem object with the given name.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="type"></param>
         /// <returns></returns>
-        public static Boolean DeleteLobSystem(string name, SystemType type)
+        public static Boolean DeleteLobSystem(string name)
         {
             SPWeb web = SPContext.Current.Web;
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
@@ -100,8 +102,8 @@ namespace EFEXCON.ExternalLookup.Core
 
             foreach (var lobSystem in availableLobSystems)
             {
-                if (lobSystem.Name == name && lobSystem.SystemType == type)
-                {
+                if (lobSystem.Name == name)
+                {            
                     try
                     {
                         lobSystem.Delete();
@@ -118,7 +120,7 @@ namespace EFEXCON.ExternalLookup.Core
         }
 
         /// <summary>
-        /// 
+        /// Create a new LobSystemInstance for the given LobSystem object.
         /// </summary>
         /// <param name="lobSystem"></param>
         /// <param name="server"></param>
@@ -160,7 +162,7 @@ namespace EFEXCON.ExternalLookup.Core
         }
 
         /// <summary>
-        /// 
+        /// Get a list of all available LobSystem objects.
         /// </summary>
         /// <returns></returns>
         public static List<LobSystem> ListAllLobSystems()
@@ -173,7 +175,7 @@ namespace EFEXCON.ExternalLookup.Core
         }
 
         /// <summary>
-        /// 
+        /// Create a new external content type in the Business Data Connectivity Service.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="table"></param>
@@ -240,16 +242,20 @@ namespace EFEXCON.ExternalLookup.Core
         /// <param name="entity"></param>
         private static void CreateReadListMethod(string name, string table, string lobSystemName, List<ExternalColumnReference> referenceList, AdministrationMetadataCatalog catalog, Entity entity)
         {
-            string listMethodName = String.Format("Get{0}s", name);
-            string listMethodEntity = name + "s";
+            string listMethodName = String.Format("Get{0}List", name);
+            string listMethodEntity = name + "List";
             string itemMethodEntity = name;
+
+            var identifierField = referenceList.Where(x => x.IsKey).ToList().First();
+            if (identifierField == null)
+                throw new NullReferenceException("Could not get identifier field.");
 
             // Create the Finder method 
             Method getListMethod = entity.Methods.Create(listMethodName, true, false, table); // itemMethodEntity
 
             // Specify the query
             // "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer]"             
-            string queryAllItemsString = "SELECT TOP(@MaxRowsReturned) ";
+            string queryAllItemsString = "SELECT TOP(@" + identifierField.DestinationName + ") ";
 
             foreach(ExternalColumnReference reference in referenceList)
             {
@@ -276,14 +282,12 @@ namespace EFEXCON.ExternalLookup.Core
 
             queryAllItemsString += whereClause;
 
-            getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);
-
-            // Set the command type 
+            // Set method properties
+            getListMethod.Properties.Add("RdbCommandText", queryAllItemsString);                       
             getListMethod.Properties.Add("RdbCommandType", "Text");
-
             getListMethod.Properties.Add("BackEndObjectType", "SqlServerTable");
             getListMethod.Properties.Add("BackEndObject", table);
-            getListMethod.Properties.Add("Schama", "dbo");
+            getListMethod.Properties.Add("Schema", "dbo");
 
             // Create the Entity return parameter
             Parameter modelParameter = getListMethod.Parameters.Create(name, true, DirectionType.Return);
@@ -312,6 +316,36 @@ namespace EFEXCON.ExternalLookup.Core
                     TypeDescriptorFlags.None, 
                     null);
 
+            // Create a Filter so that we can limit the number 
+            // of rows returned;          
+            // otherwise we may exceed the list query size threshold.
+            FilterDescriptor limitRowsReturnedFilter =
+                getListMethod.FilterDescriptors.Create(
+                    "RowsReturnedLimit", true, FilterType.Limit, identifierField.SourceName);
+
+            limitRowsReturnedFilter.Properties.Add("IsDefault", false);
+            limitRowsReturnedFilter.Properties.Add("UsedForDisambiguation", false);
+
+            // Create the RowsToRetrieve input parameter.
+            Parameter identifierParameter =
+                getListMethod.Parameters.Create(
+                "@" + identifierField.DestinationName, true, DirectionType.In);
+
+            // Create the TypeDescriptor for the MaxRowsReturned parameter.
+            // using the Filter we have created.
+            TypeDescriptor maxRowsReturnedTypeDescriptor =
+                identifierParameter.CreateRootTypeDescriptor(
+                    identifierField.DestinationName,
+                    true,
+                    "System.Int64",
+                    identifierField.DestinationName, //"MaxRowsReturned"
+                    null,
+                    limitRowsReturnedFilter,
+                    TypeDescriptorFlags.None,
+                    null,
+                    catalog);
+
+            var counter = 0;
             foreach (ExternalColumnReference reference in referenceList)
             {
                 IdentifierReference identityReference = null;
@@ -329,11 +363,11 @@ namespace EFEXCON.ExternalLookup.Core
                     filter.Properties.Add("UsedForDisambiguation", false);                    
                     filter.Properties.Add("UseValueAsDontCare", true);
                     filter.Properties.Add("DontCareValue", "");
-                                        
+
                     // Create the filter input parameter.
-                    Parameter filterParameter =
-                        getListMethod.Parameters.Create(
-                        "@" + reference.DestinationName, true, DirectionType.In);
+                    Parameter filterParameter = reference.IsKey ?
+                        identifierParameter : getListMethod.Parameters.Create(
+                            "@" + reference.DestinationName, true, DirectionType.In);  
 
                     // Create the TypeDescriptor for the filter parameter.
                     TypeDescriptor filterParamTypeDescriptor =
@@ -346,7 +380,12 @@ namespace EFEXCON.ExternalLookup.Core
                         filter,
                         TypeDescriptorFlags.None,
                         null,
-                        catalog);
+                        catalog);                    
+
+                    if (counter > 0)
+                        filterParamTypeDescriptor.Properties.Add("LogicalOperatorWithPrevious", "And");
+
+                    counter++;
                 }
              
                 var childTypeDescriptor = returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
@@ -359,42 +398,9 @@ namespace EFEXCON.ExternalLookup.Core
                     TypeDescriptorFlags.None,
                     null
                 );
-
-                childTypeDescriptor.Properties.Add("ShowInPicker", true);                               
-            }
-
-            // Create a Filter so that we can limit the number 
-            // of rows returned;          
-            // otherwise we may exceed the list query size threshold.
-            var identifierField = referenceList.Where(x => x.IsKey).ToList().First();
-            if (identifierField == null)
-                throw new NullReferenceException("Could not get identifier column.");        
-
-            FilterDescriptor limitRowsReturnedFilter =
-                getListMethod.FilterDescriptors.Create(
-                    "RowsReturnedLimit", true, FilterType.Limit, identifierField.SourceName);
-
-            limitRowsReturnedFilter.Properties.Add("IsDefault", false);
-            limitRowsReturnedFilter.Properties.Add("UsedForDisambiguation", false);
-
-            // Create the RowsToRetrieve input parameter.
-            Parameter maxRowsReturnedParameter =
-                getListMethod.Parameters.Create(
-                "@MaxRowsReturned", true, DirectionType.In);
-
-            // Create the TypeDescriptor for the MaxRowsReturned parameter.
-            // using the Filter we have created.
-            TypeDescriptor maxRowsReturnedTypeDescriptor =
-                maxRowsReturnedParameter.CreateRootTypeDescriptor(
-                "MaxRowsReturned",
-                true,
-                "System.Int64",
-                "MaxRowsReturned",
-                null,
-                limitRowsReturnedFilter,
-                TypeDescriptorFlags.None,
-                null,
-                catalog);
+              
+                childTypeDescriptor.Properties.Add("ShowInPicker", true);                
+            }        
 
             // Create the finder method instance
             MethodInstance readListMethodInstance =
@@ -429,8 +435,8 @@ namespace EFEXCON.ExternalLookup.Core
             uint language = SPContext.Current.Web != null ? SPContext.Current.Web.Language : 1033;
 
             string itemMethodName = "Get" + name;
+            string listMethodEntity = name + "List";
             string itemMethodEntity = name;
-            string listMethodEntity = name + "s";
 
             ExternalColumnReference keyColumn = null;
 
@@ -454,10 +460,12 @@ namespace EFEXCON.ExternalLookup.Core
             querySingleItemString = querySingleItemString.Substring(0, querySingleItemString.Length - 2);
             querySingleItemString += " FROM [" + table + "] WHERE " + whereClause;
 
-            getItemMethod.Properties.Add("RdbCommandText", querySingleItemString);
-
-            // Set the command type 
+            // Set the method properties
+            getItemMethod.Properties.Add("RdbCommandText", querySingleItemString);            
             getItemMethod.Properties.Add("RdbCommandType", "Text");
+            getItemMethod.Properties.Add("BackEndObjectType", "SqlServerTable");
+            getItemMethod.Properties.Add("BackEndObject", table);
+            getItemMethod.Properties.Add("Schema", "dbo");
 
             // Create the EntityID input parameter 
             if (keyColumn == null)
@@ -475,14 +483,14 @@ namespace EFEXCON.ExternalLookup.Core
                 true,
                 keyColumn.Type,
                 keyColumn.DestinationName, 
-                new IdentifierReference(keyColumn.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog), // "AdventureWorks" // "Customer"
+                new IdentifierReference(keyColumn.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog),
                 null, 
                 TypeDescriptorFlags.None, 
                 null, 
-                catalog); // "CustomerId"
+                catalog);
 
             // Create the Entity return parameter 
-            Parameter modelParameter = getItemMethod.Parameters.Create(itemMethodEntity, true, DirectionType.Return); // "Customer"
+            Parameter modelParameter = getItemMethod.Parameters.Create(itemMethodEntity, true, DirectionType.Return);
 
             // Create the TypeDescriptors for the Entity return parameter 
             TypeDescriptor returnRootCollectionTypeDescriptor =
@@ -495,7 +503,7 @@ namespace EFEXCON.ExternalLookup.Core
                     null, 
                     TypeDescriptorFlags.IsCollection, 
                     null, 
-                    catalog); // e.g. Customers
+                    catalog);
 
             TypeDescriptor returnRootElementTypeDescriptor = 
                 returnRootCollectionTypeDescriptor.ChildTypeDescriptors.Create(
@@ -506,7 +514,7 @@ namespace EFEXCON.ExternalLookup.Core
                     null, 
                     null, 
                     TypeDescriptorFlags.None, 
-                    null); // e.g. Customer
+                    null);
 
 
             foreach (ExternalColumnReference reference in referenceList)
@@ -515,14 +523,14 @@ namespace EFEXCON.ExternalLookup.Core
 
                 if (reference.IsKey)
                 {
-                    identityReference = new IdentifierReference(reference.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog); // "AdventureWorks" // "Customer"
+                    identityReference = new IdentifierReference(reference.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog);
                 }
 
                 returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
-                    reference.DestinationName,
+                    reference.SourceName,
                     true,
                     reference.Type,
-                    reference.DestinationName,
+                    reference.SourceName,
                     identityReference,
                     null,
                     TypeDescriptorFlags.None,
@@ -531,11 +539,12 @@ namespace EFEXCON.ExternalLookup.Core
             }
 
             // Create the specific finder method instance 
-            getItemMethod.MethodInstances.Create(itemMethodName, true, returnRootElementTypeDescriptor, MethodInstanceType.SpecificFinder, true); // getCustomer
+            getItemMethod.MethodInstances.Create(itemMethodName, true, returnRootElementTypeDescriptor, MethodInstanceType.SpecificFinder, true);
         }
   
         /// <summary>
-        /// 
+        /// Delete the external content type with the given name from the 
+        /// Business Data Connectivity Service.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
