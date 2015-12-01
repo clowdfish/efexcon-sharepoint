@@ -345,6 +345,7 @@ namespace EFEXCON.ExternalLookup.Core
                     null,
                     catalog);
 
+            var typeDescriptorList = new List<TypeDescriptor>();
             var counter = 0;
             foreach (ExternalColumnReference reference in referenceList)
             {
@@ -380,7 +381,10 @@ namespace EFEXCON.ExternalLookup.Core
                         filter,
                         TypeDescriptorFlags.None,
                         null,
-                        catalog);                    
+                        catalog);
+
+                    if(reference.Type == "System.String")
+                        typeDescriptorList.Add(filterParamTypeDescriptor);
 
                     if (counter > 0)
                         filterParamTypeDescriptor.Properties.Add("LogicalOperatorWithPrevious", "And");
@@ -419,6 +423,12 @@ namespace EFEXCON.ExternalLookup.Core
             // before we can set the default value.
             maxRowsReturnedTypeDescriptor.SetDefaultValue(
                 readListMethodInstance.Id, Int64.Parse("30"));
+
+            foreach(var typeDescriptor in typeDescriptorList)
+            {
+                typeDescriptor.SetDefaultValue(
+                    readListMethodInstance.Id, "");
+            }
         }
 
         /// <summary>

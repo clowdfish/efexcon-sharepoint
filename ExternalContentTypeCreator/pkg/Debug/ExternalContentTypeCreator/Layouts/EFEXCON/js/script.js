@@ -77,6 +77,7 @@ function validStructure() {
         if (name.indexOf("struct_") == 0) {
             if (value == "ID") {
                 alert(cannotUseSharePointKeyWord + " " + value);
+                return false;
             }
         }
     });
