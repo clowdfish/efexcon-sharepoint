@@ -6,12 +6,12 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ExternalLookup")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("ECTCreator")]
+[assembly: AssemblyDescription("Create external content types within the web front end of SharePoint.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ExternalLookup")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("EFEXCON AG")]
+[assembly: AssemblyProduct("ECTCreator")]
+[assembly: AssemblyCopyright("Copyright © 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

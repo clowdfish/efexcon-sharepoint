@@ -22,6 +22,6 @@
     <TemplateFile Location="Layouts\EFEXCON\js\script.js" />
   </TemplateFiles>
   <FeatureManifests>
-    <FeatureManifest Location="ExternalLookup_SiteSettingsCustomAction\Feature.xml" />
+    <FeatureManifest Location="ECTCreator_SiteSettingsCustomAction\Feature.xml" />
   </FeatureManifests>
 </Solution>

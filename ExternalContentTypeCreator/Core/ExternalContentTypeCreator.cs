@@ -255,7 +255,7 @@ namespace EFEXCON.ExternalLookup.Core
 
             // Specify the query
             // "SELECT [CustomerId] , [FirstName] , [LastName] , [Phone] , [EmailAddress] , [CompanyName] FROM [Customers].[SalesLT].[Customer]"             
-            string queryAllItemsString = "SELECT TOP(@" + identifierField.DestinationName + ") ";
+            string queryAllItemsString = "SELECT TOP(@RowLimit) ";
 
             foreach(ExternalColumnReference reference in referenceList)
             {
@@ -269,7 +269,14 @@ namespace EFEXCON.ExternalLookup.Core
             {
                 if (reference.IsSearchField)
                 {
-                    whereClause += String.Format(" ((@{1} IS NULL) OR ((@{1} IS NULL AND [{0}] IS NULL) OR [{0}] LIKE @{1})) AND", reference.SourceName, reference.DestinationName);
+                    if (reference.Type == "System.String")
+                    {
+                        whereClause += String.Format(" ((@{1} IS NULL) OR ((@{1} IS NULL AND [{0}] IS NULL) OR [{0}] LIKE @{1})) AND", reference.SourceName, reference.DestinationName);
+                    }
+                    else
+                    {
+                        whereClause += String.Format(" ((@{1} = N'0') OR ((@{1} IS NULL AND [{0}] IS NULL) OR [{0}] = @{1})) AND", reference.SourceName, reference.DestinationName);     
+                    }
                 }
             }
 
@@ -321,7 +328,7 @@ namespace EFEXCON.ExternalLookup.Core
             // otherwise we may exceed the list query size threshold.
             FilterDescriptor limitRowsReturnedFilter =
                 getListMethod.FilterDescriptors.Create(
-                    "RowsReturnedLimit", true, FilterType.Limit, identifierField.SourceName);
+                    "RowLimitFilter", true, FilterType.Limit, identifierField.SourceName);
 
             limitRowsReturnedFilter.Properties.Add("IsDefault", false);
             limitRowsReturnedFilter.Properties.Add("UsedForDisambiguation", false);
@@ -329,23 +336,24 @@ namespace EFEXCON.ExternalLookup.Core
             // Create the RowsToRetrieve input parameter.
             Parameter identifierParameter =
                 getListMethod.Parameters.Create(
-                "@" + identifierField.DestinationName, true, DirectionType.In);
+                "@RowLimit", true, DirectionType.In);
 
             // Create the TypeDescriptor for the MaxRowsReturned parameter.
             // using the Filter we have created.
             TypeDescriptor maxRowsReturnedTypeDescriptor =
                 identifierParameter.CreateRootTypeDescriptor(
-                    identifierField.DestinationName,
+                    "RowLimit",
                     true,
                     "System.Int64",
-                    identifierField.DestinationName, //"MaxRowsReturned"
+                    "RowLimit", 
                     null,
                     limitRowsReturnedFilter,
                     TypeDescriptorFlags.None,
                     null,
                     catalog);
 
-            var typeDescriptorList = new List<TypeDescriptor>();
+            var stringTypeDescriptorList = new List<TypeDescriptor>();
+            var numberTypeDescriptorList = new List<TypeDescriptor>();
             var counter = 0;
             foreach (ExternalColumnReference reference in referenceList)
             {
@@ -366,10 +374,9 @@ namespace EFEXCON.ExternalLookup.Core
                     filter.Properties.Add("DontCareValue", "");
 
                     // Create the filter input parameter.
-                    Parameter filterParameter = reference.IsKey ?
-                        identifierParameter : getListMethod.Parameters.Create(
-                            "@" + reference.DestinationName, true, DirectionType.In);  
-
+                    Parameter filterParameter = getListMethod.Parameters.Create(
+                            "@" + reference.DestinationName, true, DirectionType.In); 
+                   
                     // Create the TypeDescriptor for the filter parameter.
                     TypeDescriptor filterParamTypeDescriptor =
                         filterParameter.CreateRootTypeDescriptor(
@@ -383,11 +390,13 @@ namespace EFEXCON.ExternalLookup.Core
                         null,
                         catalog);
 
-                    if(reference.Type == "System.String")
-                        typeDescriptorList.Add(filterParamTypeDescriptor);
+                    if (reference.Type == "System.String")
+                        stringTypeDescriptorList.Add(filterParamTypeDescriptor);
+                    else
+                        numberTypeDescriptorList.Add(filterParamTypeDescriptor);
 
                     if (counter > 0)
-                        filterParamTypeDescriptor.Properties.Add("LogicalOperatorWithPrevious", "And");
+                        filterParamTypeDescriptor.Properties.Add("LogicalOperatorWithPrevious", "And");                                     
 
                     counter++;
                 }
@@ -424,10 +433,16 @@ namespace EFEXCON.ExternalLookup.Core
             maxRowsReturnedTypeDescriptor.SetDefaultValue(
                 readListMethodInstance.Id, Int64.Parse("30"));
 
-            foreach(var typeDescriptor in typeDescriptorList)
+            foreach(var typeDescriptor in stringTypeDescriptorList)
             {
                 typeDescriptor.SetDefaultValue(
                     readListMethodInstance.Id, "");
+            }
+
+            foreach (var typeDescriptor in numberTypeDescriptorList)
+            {
+                typeDescriptor.SetDefaultValue(
+                    readListMethodInstance.Id, Int32.Parse("0"));
             }
         }
 
