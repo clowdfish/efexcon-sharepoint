@@ -81,7 +81,6 @@ C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\b
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\zh-Hant\System.Spatial.resources.dll
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.dll
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.pdb
-C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalLookup.csprojResolveAssemblyReference.cache
 C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\ExternalContentTypeCreator.dll
 C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\ExternalContentTypeCreator.pdb
 C:\Users\Administrator\Documents\GitHubVisualStudio\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\Microsoft.BusinessData.dll

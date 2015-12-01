@@ -28,7 +28,9 @@ namespace EFEXCON.ExternalLookup.Helper
             get {
                 if (_type == "int")
                     return "System.Int32";
-                else 
+                else if (_type == "datetime" || _type == "date")
+                    return "System.DateTime";
+                else
                     return "System.String";
             }
             set {               
