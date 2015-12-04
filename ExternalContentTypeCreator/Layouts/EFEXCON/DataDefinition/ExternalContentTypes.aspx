@@ -74,7 +74,7 @@
                             <input type="checkbox" name="struct_<%# Eval("Name") %>_check" />
                         </span>
                         <span class="table-cell">
-                            <input type="checkbox" name="struct_<%# Eval("Name") %>_search" />
+                            <input type="checkbox" name="struct_<%# Eval("Name") %>_search" <%# Eval("Type").ToString().ToLower().Equals("nvarchar") ? "" : "disabled='disabled'" %> />
                         </span>
                         <span class="table-cell">
                             <input type="checkbox" name="struct_<%# Eval("Name") %>_key" />
