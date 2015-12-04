@@ -2,4 +2,3 @@ C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\b
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\bin\Debug\ExternalContentTypeCreator.pdb
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.dll
 C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ExternalContentTypeCreator.pdb
-C:\Users\sascha\Documents\GitHub\efexcon-sharepoint\ExternalContentTypeCreator\obj\Debug\ECTCreator.csprojResolveAssemblyReference.cache

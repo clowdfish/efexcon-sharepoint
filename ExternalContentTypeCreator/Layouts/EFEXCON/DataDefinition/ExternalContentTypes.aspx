@@ -80,8 +80,8 @@
                             <input type="checkbox" name="struct_<%# Eval("Name") %>_key" />
                         </span>
                         <span class="table-cell">
-                            <input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" />
-                            <input type="hidden" name="struct_<%# Eval("Name") %>_type" value="<%# Eval("Type") %>" />
+                            <input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" />                       
+                            <input type="hidden" name="struct_<%# Eval("Name") %>_type" value="<%# Eval("Type") %><%# Eval("Nullable") ? ";Nullable" : "" %>" />
                         </span>
                     </span>
                 </ItemTemplate>

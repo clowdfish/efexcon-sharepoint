@@ -144,7 +144,7 @@ namespace EFEXCON.ExternalLookup.Helper
                     {
                         var commandString =
                             String.Format(
-                                "SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{0}'",
+                                "SELECT TABLE_CATALOG, TABLE_SCHEMA, COLUMN_NAME, DATA_TYPE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{0}'",
                                 tableName);
 
                         SqlCommand cmd = new SqlCommand(commandString, connection);
@@ -157,8 +157,11 @@ namespace EFEXCON.ExternalLookup.Helper
                         {
                             result.Add(new TableColumn()
                             {
-                                Name = reader.GetString(0),
-                                Type = reader.GetString(1)
+                                Catalog = reader.GetString(0),
+                                Schema = reader.GetString(1),
+                                Name = reader.GetString(2),
+                                Type = reader.GetString(3),
+                                Nullable = reader.GetString(4) == "YES"
                             });
                         }
 
