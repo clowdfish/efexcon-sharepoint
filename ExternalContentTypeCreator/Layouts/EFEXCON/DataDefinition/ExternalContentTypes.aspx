@@ -81,7 +81,7 @@
                         </span>
                         <span class="table-cell">
                             <input type="text" name="struct_<%# Eval("Name") %>" value="<%# Eval("Name") %>" />                       
-                            <input type="hidden" name="struct_<%# Eval("Name") %>_type" value="<%# Eval("Type") %><%# Eval("Nullable") ? ";Nullable" : "" %>" />
+                            <input type="hidden" name="struct_<%# Eval("Name") %>_type" value="<%# Eval("Type") %><%# Eval("Nullable").ToString().Equals("YES") ? ";Nullable" : "" %>" />
                         </span>
                     </span>
                 </ItemTemplate>

@@ -8,7 +8,7 @@ namespace EFEXCON.ExternalLookup.Helper
         public string Schema { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public Boolean Nullable { get; set; }
+        public string Nullable { get; set; }
     }
 
     public class ExternalColumnReference
@@ -27,28 +27,28 @@ namespace EFEXCON.ExternalLookup.Helper
         public Boolean IsSearchField { get; set; }
 
         private Boolean _isNullable;
+        private string nullableDescription =
+            "System.Nullable`1[[{0}, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]";
 
         public string Type
         {
             get {
                 if (_type == "int") {
                     if(_isNullable)
-                        return "System.Nullable<System.Int32>";
+                        return String.Format(nullableDescription, "System.Int32");
                     else
                         return "System.Int32";
                 }                    
                 else if (_type == "datetime" || _type == "date") {
                     if(_isNullable)
-                        return "System.Nullable<System.DateTime>";
+                        return String.Format(nullableDescription, "System.DateTime");
                     else
                         return "System.DateTime";
                 }
                 else
-                {
-                    if (_isNullable)
-                        return "System.Nullable<System.String>";
-                    else
-                        return "System.String";
+                {   
+                    // there is no nullable pendent for string
+                    return "System.String";
                 }
             }
             set {

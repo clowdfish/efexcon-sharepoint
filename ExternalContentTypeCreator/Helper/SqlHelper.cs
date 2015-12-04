@@ -161,7 +161,7 @@ namespace EFEXCON.ExternalLookup.Helper
                                 Schema = reader.GetString(1),
                                 Name = reader.GetString(2),
                                 Type = reader.GetString(3),
-                                Nullable = reader.GetString(4) == "YES"
+                                Nullable = reader.GetString(4)
                             });
                         }
 
