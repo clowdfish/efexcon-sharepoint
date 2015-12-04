@@ -171,7 +171,8 @@ namespace EFEXCON.ExternalLookup.Core
             BdcService service = SPFarm.Local.Services.GetValue<BdcService>(String.Empty);
             SPServiceContext context = SPServiceContext.GetContext(web.Site);
 
-           return service.GetAdministrationMetadataCatalog(context).GetLobSystems("*").ToList();
+            return service.GetAdministrationMetadataCatalog(context).GetLobSystems("*")
+                .Where(x => !x.Name.StartsWith("SharePointDesigner")).ToList();
         }
 
         /// <summary>
@@ -328,7 +329,7 @@ namespace EFEXCON.ExternalLookup.Core
             // otherwise we may exceed the list query size threshold.
             FilterDescriptor limitRowsReturnedFilter =
                 getListMethod.FilterDescriptors.Create(
-                    "RowLimitFilter", true, FilterType.Limit, identifierField.SourceName);
+                    "RowLimitFilter", true, FilterType.Limit, identifierField.DestinationName);
 
             limitRowsReturnedFilter.Properties.Add("IsDefault", false);
             limitRowsReturnedFilter.Properties.Add("UsedForDisambiguation", false);
@@ -345,7 +346,7 @@ namespace EFEXCON.ExternalLookup.Core
                     "RowLimit",
                     true,
                     "System.Int64",
-                    "RowLimit", 
+                    identifierField.SourceName, 
                     null,
                     limitRowsReturnedFilter,
                     TypeDescriptorFlags.None,
@@ -365,7 +366,7 @@ namespace EFEXCON.ExternalLookup.Core
                 {
                     FilterType filterType = reference.Type == "System.String" ? FilterType.Wildcard : FilterType.Comparison;
                     FilterDescriptor filter = getListMethod.FilterDescriptors.Create(
-                        reference.DestinationName + "Filter", true, filterType, reference.SourceName);
+                        reference.DestinationName + "Filter", true, filterType, reference.DestinationName);
 
                     filter.Properties.Add("CaseSensitive", false);
                     filter.Properties.Add("IsDefault", false);
@@ -380,7 +381,7 @@ namespace EFEXCON.ExternalLookup.Core
                     // Create the TypeDescriptor for the filter parameter.
                     TypeDescriptor filterParamTypeDescriptor =
                         filterParameter.CreateRootTypeDescriptor(
-                        reference.SourceName,
+                        reference.DestinationName,
                         true,
                         reference.Type,
                         reference.SourceName,
@@ -402,7 +403,7 @@ namespace EFEXCON.ExternalLookup.Core
                 }
              
                 var childTypeDescriptor = returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
-                    reference.SourceName,
+                    reference.DestinationName,
                     true,
                     reference.Type,
                     reference.SourceName,
@@ -507,7 +508,7 @@ namespace EFEXCON.ExternalLookup.Core
                 keyColumn.DestinationName, 
                 true,
                 keyColumn.Type,
-                keyColumn.DestinationName, 
+                keyColumn.SourceName, 
                 new IdentifierReference(keyColumn.DestinationName, new EntityReference("EFEXCON.ExternalLookup", itemMethodEntity, catalog), catalog),
                 null, 
                 TypeDescriptorFlags.None, 
@@ -541,7 +542,6 @@ namespace EFEXCON.ExternalLookup.Core
                     TypeDescriptorFlags.None, 
                     null);
 
-
             foreach (ExternalColumnReference reference in referenceList)
             {
                 IdentifierReference identityReference = null;
@@ -552,7 +552,7 @@ namespace EFEXCON.ExternalLookup.Core
                 }
 
                 returnRootElementTypeDescriptor.ChildTypeDescriptors.Create(
-                    reference.SourceName,
+                    reference.DestinationName,
                     true,
                     reference.Type,
                     reference.SourceName,
